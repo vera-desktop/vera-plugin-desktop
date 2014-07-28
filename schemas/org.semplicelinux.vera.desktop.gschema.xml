@@ -1,0 +1,38 @@
+<!-- vera-plugin-desktop -->
+
+<schemalist>
+	<!-- Vera.DesktopPlugin.BackgroundMode enum -->
+	<enum id="org.semplicelinux.vera.desktop.BackgroundMode">
+		<value nick="Color" value="1" />
+		<value nick="Tile" value="2" />
+		<value nick="Stretch" value="3" />
+		<value nick="Screen" value="4" />
+		<value nick="Fit" value="5" />
+		<value nick="Crop" value="6" />
+		<value nick="Center" value="7" />
+	</enum>
+	
+	<schema path="/org/semplicelinux/vera/desktop/" id="org.semplicelinux.vera.desktop" gettext-domain="vera-plugin-desktop">
+		<key name="background-mode" enum="org.semplicelinux.vera.desktop.BackgroundMode">
+			<default>"Fit"</default>
+			<summary>Background Mode</summary>
+			<description>Determines how the wallpaper is rendered.</description>
+		</key>
+		<key name="image-path" type="as">
+			<default>["/usr/share/backgrounds/semplice-default_2560x1440.png"]</default>
+			<summary>Image Path</summary>
+			<description>Path to the wallpaper.</description>
+		</key>
+		<key name="background-color" type="s">
+			<default>"#131494"</default>
+			<summary>Background color</summary>
+			<description>Color to display under the image (if it has alpha), or as a replacement for the image (if background-mode is 'Color').</description>
+		</key>
+		<key name="show-tutorial" type="b">
+			<default>true</default>
+			<summary>Tutorial</summary>
+			<description>If true, the tutorial will be shown. Note that you need to restart vera after changing the value.</description>
+		</key>
+	</schema>
+
+</schemalist>
