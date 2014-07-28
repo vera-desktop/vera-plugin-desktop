@@ -1,3 +1,9 @@
+vera-plugin-desktop (0.20.1-1) devel; urgency=medium
+
+  * Depend on gee (until the dependency is dropped in vera)
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Mon, 28 Jul 2014 12:52:31 +0200
+
 vera-plugin-desktop (0.20-1) devel; urgency=medium
 
   * Initial release.
