@@ -87,6 +87,9 @@ namespace DesktopPlugin {
             /* Monitor number */
             this.monitor_number = monitor_number;
             
+            /* Make child window invisible */
+            this.visible_window = false;
+            
             /* Events */
             this.add_events(
                 Gdk.EventMask.BUTTON_PRESS_MASK |
