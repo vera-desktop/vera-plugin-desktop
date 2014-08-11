@@ -55,6 +55,50 @@ namespace DesktopPlugin {
         private weak Gdk.Pixbuf pixbuf;
         
         public signal void menu_shown ();
+        
+        public static Gdk.RGBA get_dominant_color(Gdk.Pixbuf pixbuf) {
+            /**
+             * Given a GdkPixbuf, this static method will return the
+             * dominant color found in the image.
+             * 
+             * Method based on GetDominantColorOfImage() in linuxdeepin /
+             * go_lib @ GitHub, committed by fasheng. Thank you!
+             * https://github.com/linuxdeepin/go-lib/blob/master/gdkpixbuf/gdk_pixbuf_utils.c
+            */
+            
+            weak uint8[] pixels = pixbuf.get_pixels_with_length();
+            
+            int64 sum_r = 0;
+            int64 sum_g = 0;
+            int64 sum_b = 0;
+            int64 count = 0;
+            int skip = pixbuf.get_n_channels();
+            
+            for (int i = 0; i < pixels.length; i += skip) {
+                if (skip == 4 && pixels[i+3] < 125) {
+                    continue;
+                }
+                
+                sum_r += pixels[i];
+                sum_g += pixels[i+1];
+                sum_b += pixels[i+2];
+                count++;
+            }
+            
+            message((sum_r / count).to_string());
+            message((sum_g / count).to_string());
+            message((sum_b / count).to_string());
+            
+            Gdk.RGBA result = Gdk.RGBA();
+            int64 red = sum_r / count;
+            int64 green = sum_g / count;
+            int64 blue = sum_b / count;
+            /* Better way to do this? */
+            result.parse("#%lli%lli%lli".printf(red, green, blue));
+            
+            return result;
+            
+        }
 
         private bool on_button_pressed(Gdk.EventButton evnt) {
             

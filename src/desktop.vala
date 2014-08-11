@@ -197,7 +197,7 @@ namespace DesktopPlugin {
 		    src_h = pixbuf.get_height();
 		    dest_w = geometry.width;
 		    dest_h = geometry.height;
-		    
+		    		    
 		    if (type == BackgroundMode.SCREEN) {
 			x = -geometry.x;
 			y = -geometry.y;
