@@ -488,6 +488,20 @@ namespace DesktopPlugin {
 	    } catch (Error ex) {
 		error("Unable to load plugin settings.");
 	    }
+	    
+	    /* Styling */
+	    Gtk.CssProvider css_provider = new Gtk.CssProvider();
+	    css_provider.load_from_data(@"
+		#tutorial { background: transparent; }
+		.tutorial-page { background: transparent; }",
+		-1
+	    );
+	    
+	    Gtk.StyleContext.add_provider_for_screen(
+		Gdk.Screen.get_default(),
+		css_provider,
+		Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+	    );
 	}
 
 	public void startup(StartupPhase phase) {

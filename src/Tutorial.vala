@@ -39,6 +39,7 @@ namespace DesktopPlugin {
 			*/
 			
 			Object(orientation: Gtk.Orientation.VERTICAL);
+			this.get_style_context().add_class("tutorial-page");
 			
 			// Create the text_content
 			this.text_content = new Gtk.Label(null);
@@ -84,10 +85,12 @@ namespace DesktopPlugin {
 			/**
 			 * Constructs the object.
 			*/
-			
+						
 			Object();
 			this.set_transition_type(Gtk.StackTransitionType.SLIDE_DOWN);
 			this.set_transition_duration(800);
+
+			this.name = "tutorial";
 			
 			// Build TutorialLabelAttributes
 			this.tutorial_label_attributes = new Pango.AttrList();
