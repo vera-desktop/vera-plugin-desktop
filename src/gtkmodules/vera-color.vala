@@ -24,15 +24,25 @@ public class VeraColor : Object {
 	private static Settings settings;
 	private static Gtk.CssProvider provider;
 	
+	private static void reset_widgets() {
+		/**
+		 * Repaints the widgets.
+		*/
+		
+		Idle.add(
+			() => {
+				Gtk.StyleContext.reset_widgets(Gdk.Screen.get_default());
+				return false;
+			}
+		);
+	}
+	
 	private static void on_vera_color_enabled_changed() {
 		/**
 		 * Fired when the 'vera-color-enabled' property has been changed.
 		*/
-		
-		message("enabled changed!");
-		
+				
 		if (settings.get_boolean("vera-color-enabled")) {
-			message("Enabling");
 			Gtk.StyleContext.add_provider_for_screen(
 				Gdk.Screen.get_default(),
 				provider,
@@ -41,11 +51,12 @@ public class VeraColor : Object {
 			
 			on_vera_color_changed();
 		} else {
-			message("Disabling");
 			Gtk.StyleContext.remove_provider_for_screen(
 				Gdk.Screen.get_default(),
 				provider
 			);
+
+			reset_widgets();
 		}
 		
 	}
@@ -58,13 +69,12 @@ public class VeraColor : Object {
 		if (!settings.get_boolean("vera-color-enabled"))
 			return;
 		
-		message("Loading");
 		provider.load_from_data(
 			"@define-color vera-color %s;".printf(settings.get_string("vera-color")),
 			-1
 		);
 		
-		Gtk.StyleContext.reset_widgets(Gdk.Screen.get_default());
+		reset_widgets();
 		
 	}
 	
