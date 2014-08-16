@@ -1,3 +1,12 @@
+vera-plugin-desktop (0.21.0-1) devel; urgency=medium
+
+  * Tutorial: finally fixed the 'grey background' issue.
+  * Implemented the vera-color property that will be exported to the current running GTK+ theme.
+  * Added 'vera-color' gtkmodule.
+  * debian/vera-plugin-desktop.install: ship gtk module.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sat, 16 Aug 2014 23:56:25 +0200
+
 vera-plugin-desktop (0.20.1-2) devel; urgency=medium
 
   * Build-depend on libgee-dev
