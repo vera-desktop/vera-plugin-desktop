@@ -43,15 +43,17 @@ namespace DesktopPlugin {
 	    /**
 	     * Fired when the settings of vera-desktop have been changed.
 	     * Currently we handle only the wallpaper so we'll invoke
-	     * set_wallpaper().
+	     * update_background().
 	    */
 	    
-	    debug("changed setting %s", key);
+	    if (key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled")
+		return;
 	    
-	    this.update_background();
+	    this.update_background(true);
+	    
 	}
 
-        private void update_background() {
+        private void update_background(bool set_vera_color = false) {
 	    /**
 	     * Sets the background.
 	     * Currently this method is pretty crowded up,
@@ -186,6 +188,20 @@ namespace DesktopPlugin {
 			pixbuf = new Gdk.Pixbuf.from_file(path);
 		    }
 
+		    if (set_vera_color && i == 0) {
+			/* If this is the first monitor, obtain the
+			 * dominant color if we should */
+
+			if (!this.settings.get_boolean("vera-color-lock") &&
+			    this.settings.get_boolean("vera-color-enabled"))
+			{
+			    this.settings.set_string(
+				"vera-color",
+				AverageColor.pixbuf_average_value(pixbuf)
+			    );
+			}
+		    }
+
 
 		    message("Monitor " + i.to_string());
 		    message("x: " + geometry.x.to_string());
@@ -197,7 +213,7 @@ namespace DesktopPlugin {
 		    src_h = pixbuf.get_height();
 		    dest_w = geometry.width;
 		    dest_h = geometry.height;
-		    
+		    		    
 		    if (type == BackgroundMode.SCREEN) {
 			x = -geometry.x;
 			y = -geometry.y;
@@ -488,6 +504,20 @@ namespace DesktopPlugin {
 	    } catch (Error ex) {
 		error("Unable to load plugin settings.");
 	    }
+	    
+	    /* Styling */
+	    Gtk.CssProvider css_provider = new Gtk.CssProvider();
+	    css_provider.load_from_data(@"
+		#tutorial { background: transparent; }
+		.tutorial-page { background-color: @vera-color; }",
+		-1
+	    );
+	    
+	    Gtk.StyleContext.add_provider_for_screen(
+		Gdk.Screen.get_default(),
+		css_provider,
+		Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+	    );
 	}
 
 	public void startup(StartupPhase phase) {

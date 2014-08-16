@@ -86,7 +86,7 @@ namespace DesktopPlugin {
             
             /* Monitor number */
             this.monitor_number = monitor_number;
-            
+                        
             /* Events */
             this.add_events(
                 Gdk.EventMask.BUTTON_PRESS_MASK |

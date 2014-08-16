@@ -39,6 +39,7 @@ namespace DesktopPlugin {
 			*/
 			
 			Object(orientation: Gtk.Orientation.VERTICAL);
+			this.get_style_context().add_class("tutorial-page");
 			
 			// Create the text_content
 			this.text_content = new Gtk.Label(null);
@@ -53,7 +54,7 @@ namespace DesktopPlugin {
 			
 			Gdk.RGBA foreground = Gdk.RGBA();
 			foreground.parse("#fff");
-			this.override_background_color(Gtk.StateFlags.NORMAL, color);
+			//this.override_background_color(Gtk.StateFlags.NORMAL, color);
 			//this.override_foreground_color(Gtk.StateFlags.NORMAL, foreground);
 			
 			this.pack_start(this.text_content, true, true, 0);
@@ -84,10 +85,12 @@ namespace DesktopPlugin {
 			/**
 			 * Constructs the object.
 			*/
-			
+						
 			Object();
 			this.set_transition_type(Gtk.StackTransitionType.SLIDE_DOWN);
 			this.set_transition_duration(800);
+
+			this.name = "tutorial";
 			
 			// Build TutorialLabelAttributes
 			this.tutorial_label_attributes = new Pango.AttrList();

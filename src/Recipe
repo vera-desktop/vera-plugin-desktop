@@ -25,6 +25,7 @@ libraries.desktop {
 		desktop.vala \
 		DesktopWindow.vala \
 		DesktopBackground.vala \
+		AverageColor.vala \
 		workarounds/xsetproperty.c \
 		DesktopLauncher.vala \
 		Tutorial.vala
@@ -34,5 +35,18 @@ libraries.desktop {
 
 	vala-packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libpeas-1.0 cairo x11 vera
 	packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libpeas-1.0 cairo x11 vera
+
+}
+
+libraries.vera-color {
+	install-directory = $(options.library-directory)/gtk-3.0/modules
+	sources = \
+		gtkmodules/vera-color.vala
+	vala-compile-flags = --vapidir=./vapis
+	compile-flags = -O2 -flto
+	link-flags = -flto -Wl,--as-needed
+
+	vala-packages = gtk+-3.0 gmodule-2.0
+	packages = gtk+-3.0 gmodule-2.0
 
 }
