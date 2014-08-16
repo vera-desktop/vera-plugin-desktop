@@ -25,6 +25,7 @@ libraries.desktop {
 		desktop.vala \
 		DesktopWindow.vala \
 		DesktopBackground.vala \
+		AverageColor.vala \
 		workarounds/xsetproperty.c \
 		DesktopLauncher.vala \
 		Tutorial.vala

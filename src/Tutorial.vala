@@ -54,7 +54,7 @@ namespace DesktopPlugin {
 			
 			Gdk.RGBA foreground = Gdk.RGBA();
 			foreground.parse("#fff");
-			this.override_background_color(Gtk.StateFlags.NORMAL, color);
+			//this.override_background_color(Gtk.StateFlags.NORMAL, color);
 			//this.override_foreground_color(Gtk.StateFlags.NORMAL, foreground);
 			
 			this.pack_start(this.text_content, true, true, 0);

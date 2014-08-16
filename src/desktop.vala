@@ -43,15 +43,17 @@ namespace DesktopPlugin {
 	    /**
 	     * Fired when the settings of vera-desktop have been changed.
 	     * Currently we handle only the wallpaper so we'll invoke
-	     * set_wallpaper().
+	     * update_background().
 	    */
 	    
-	    debug("changed setting %s", key);
+	    if (key == "vera-color" || key == "vera-color-lock")
+		return;
 	    
-	    this.update_background();
+	    this.update_background(true);
+	    
 	}
 
-        private void update_background() {
+        private void update_background(bool set_vera_color = false) {
 	    /**
 	     * Sets the background.
 	     * Currently this method is pretty crowded up,
@@ -184,6 +186,18 @@ namespace DesktopPlugin {
 			 * monitor, we already have the pixbuf... */
 			
 			pixbuf = new Gdk.Pixbuf.from_file(path);
+		    }
+
+		    if (set_vera_color && i == 0) {
+			/* If this is the first monitor, obtain the
+			 * dominant color if we should */
+
+			if (!this.settings.get_boolean("vera-color-lock")) {
+			    this.settings.set_string(
+				"vera-color",
+				AverageColor.pixbuf_average_value(pixbuf)
+			    );
+			}
 		    }
 
 
@@ -493,7 +507,7 @@ namespace DesktopPlugin {
 	    Gtk.CssProvider css_provider = new Gtk.CssProvider();
 	    css_provider.load_from_data(@"
 		#tutorial { background: transparent; }
-		.tutorial-page { background: transparent; }",
+		.tutorial-page { background-color: @vera-color; }",
 		-1
 	    );
 	    
