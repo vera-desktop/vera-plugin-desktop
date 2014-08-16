@@ -46,7 +46,7 @@ namespace DesktopPlugin {
 	     * update_background().
 	    */
 	    
-	    if (key == "vera-color" || key == "vera-color-lock")
+	    if (key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled")
 		return;
 	    
 	    this.update_background(true);
@@ -192,7 +192,9 @@ namespace DesktopPlugin {
 			/* If this is the first monitor, obtain the
 			 * dominant color if we should */
 
-			if (!this.settings.get_boolean("vera-color-lock")) {
+			if (!this.settings.get_boolean("vera-color-lock") &&
+			    this.settings.get_boolean("vera-color-enabled"))
+			{
 			    this.settings.set_string(
 				"vera-color",
 				AverageColor.pixbuf_average_value(pixbuf)

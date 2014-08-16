@@ -28,6 +28,11 @@
 			<summary>Background color</summary>
 			<description>Color to display under the image (if it has alpha), or as a replacement for the image (if background-mode is 'Color').</description>
 		</key>
+		<key name="vera-color-enabled" type="b">
+			<default>true</default>
+			<summary>Vera color</summary>
+			<description>If true, the @vera-color property will be exported to the GTK+ theme.</description>
+		</key>
 		<key name="vera-color" type="s">
 			<default>"#131494"</default>
 			<summary>Vera color</summary>

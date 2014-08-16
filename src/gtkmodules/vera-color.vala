@@ -19,43 +19,69 @@
  *     Eugenio "g7" Paolantonio <me@medesimo.eu>
 */
 
-public class VeraColor : Gtk.CssProvider {
+public class VeraColor : Object {
 
-	private Settings settings;
+	private static Settings settings;
+	private static Gtk.CssProvider provider;
 	
-	private void on_vera_color_changed() {
+	private static void on_vera_color_enabled_changed() {
+		/**
+		 * Fired when the 'vera-color-enabled' property has been changed.
+		*/
 		
-		this.load_from_data(
-			"@define-color vera-color %s;".printf(this.settings.get_string("vera-color")),
-			-1
-		);
+		message("enabled changed!");
+		
+		if (settings.get_boolean("vera-color-enabled")) {
+			message("Enabling");
+			Gtk.StyleContext.add_provider_for_screen(
+				Gdk.Screen.get_default(),
+				provider,
+				Gtk.STYLE_PROVIDER_PRIORITY_SETTINGS
+			);
+			
+			on_vera_color_changed();
+		} else {
+			message("Disabling");
+			Gtk.StyleContext.remove_provider_for_screen(
+				Gdk.Screen.get_default(),
+				provider
+			);
+		}
 		
 	}
 	
-	public VeraColor() {
+	private static void on_vera_color_changed() {
+		/**
+		 * Fired when the 'vera-color' property has been changed.
+		*/
+		
+		if (!settings.get_boolean("vera-color-enabled"))
+			return;
+		
+		message("Loading");
+		provider.load_from_data(
+			"@define-color vera-color %s;".printf(settings.get_string("vera-color")),
+			-1
+		);
+		
+		Gtk.StyleContext.reset_widgets(Gdk.Screen.get_default());
+		
+	}
+	
+	[CCode (cname = "gtk_module_init")]
+	public static void gtk_module_init(int argc, string[] argv) {
 		/**
 		 * Initializes the module.
 		*/
 		
-		Object();
+		provider = new Gtk.CssProvider();
 		
-		this.settings = new Settings("org.semplicelinux.vera.desktop");
-		this.settings.changed["vera-color"].connect(this.on_vera_color_changed);
-				
-		Gtk.StyleContext.add_provider_for_screen(
-			Gdk.Screen.get_default(),
-			this,
-			Gtk.STYLE_PROVIDER_PRIORITY_SETTINGS
-		);
+		settings = new Settings("org.semplicelinux.vera.desktop");
+		settings.changed["vera-color-enabled"].connect(on_vera_color_enabled_changed);
+		settings.changed["vera-color"].connect(on_vera_color_changed);
 		
-		this.on_vera_color_changed();
+		on_vera_color_enabled_changed();
 		
 	}
 
-}
-
-public void gtk_module_init (int argc, string[] argv) {
-	message("Module init");
-	
-	new VeraColor();
 }
