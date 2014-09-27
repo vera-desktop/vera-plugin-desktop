@@ -46,10 +46,36 @@ namespace DesktopPlugin {
 	     * update_background().
 	    */
 	    
-	    if (key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled")
+	    if (key == "vera-color-lock" && !this.settings.get_boolean("vera-color-lock"))
+		/*
+		 * vera-color-lock just disabled, we need to recalculate
+		 * the average color...
+		*/
+		this.set_average_from_current_wallpaper();
+	    else if (!(key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled"))
+		this.update_background(true);
+	    
+	}
+	
+	private void set_average_from_current_wallpaper() {
+	    /**
+	     * Sets the average color from the current wallpaper.
+	    */
+	    
+	    if (!this.settings.get_boolean("vera-color-enabled"))
+		/* Disabled, bye */
 		return;
 	    
-	    this.update_background(true);
+	    string wallpaper = this.settings.get_strv("image-path")[0];
+	    
+	    try {
+		this.settings.set_string(
+		    "vera-color",
+		    AverageColor.pixbuf_average_value(
+			new Gdk.Pixbuf.from_file(wallpaper)
+		    )
+		);
+	    } catch (Error e) {}
 	    
 	}
 
