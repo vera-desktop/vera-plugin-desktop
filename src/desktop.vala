@@ -27,6 +27,8 @@ namespace DesktopPlugin {
 
     public class Plugin : Peas.ExtensionBase, VeraPlugin {
 
+	private ApplicationLauncher application_launcher;
+
 	public Display display;
 
 	public Settings settings;
@@ -480,7 +482,7 @@ namespace DesktopPlugin {
 		screen.get_monitor_geometry(i, out rectangle);
 		
 		/* Create window */
-		window = new DesktopWindow(rectangle, this.settings, this.display, i);
+		window = new DesktopWindow(rectangle, this.settings, this.application_launcher, this.display, i);
 		this.window_list += window;
 		
 		window.desktop_background.realize.connect(this.on_desktopbackground_realized);
@@ -530,6 +532,9 @@ namespace DesktopPlugin {
 	    } catch (Error ex) {
 		error("Unable to load plugin settings.");
 	    }
+	    
+	    /* Base application launcher */
+	    this.application_launcher = new ApplicationLauncher();
 	    
 	    /* Styling */
 	    Gtk.CssProvider css_provider = new Gtk.CssProvider();
