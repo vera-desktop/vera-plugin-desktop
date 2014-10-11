@@ -13,6 +13,21 @@
 	</enum>
 	
 	<schema path="/org/semplicelinux/vera/desktop/" id="org.semplicelinux.vera.desktop" gettext-domain="vera-plugin-desktop">
+		<key name="background-search-paths" type="as">
+			<default>["/usr/share/backgrounds"]</default>
+			<summary>Search paths for the backgrounds</summary>
+			<description>Directories where to search for available backgrounds.</description>
+		</key>
+		<key name="background-include" type="as">
+			<default>[]</default>
+			<summary>Single backgrounds to include</summary>
+			<description>Paths to single backgrounds to include in the backgrounds list.</description>
+		</key>
+		<key name="background-exclude" type="as">
+			<default>[]</default>
+			<summary>Single backgrounds to exclude</summary>
+			<description>Paths to single backgrounds to exclude from the backgrounds list.</description>
+		</key>
 		<key name="background-mode" enum="org.semplicelinux.vera.desktop.BackgroundMode">
 			<default>"Fit"</default>
 			<summary>Background Mode</summary>
