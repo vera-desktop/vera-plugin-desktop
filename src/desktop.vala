@@ -27,6 +27,8 @@ namespace DesktopPlugin {
 
     public class Plugin : Peas.ExtensionBase, VeraPlugin {
 
+	private ApplicationLauncher application_launcher;
+
 	public Display display;
 
 	public Settings settings;
@@ -46,10 +48,36 @@ namespace DesktopPlugin {
 	     * update_background().
 	    */
 	    
-	    if (key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled")
+	    if (key == "vera-color-lock" && !this.settings.get_boolean("vera-color-lock"))
+		/*
+		 * vera-color-lock just disabled, we need to recalculate
+		 * the average color...
+		*/
+		this.set_average_from_current_wallpaper();
+	    else if (!(key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled"))
+		this.update_background(true);
+	    
+	}
+	
+	private void set_average_from_current_wallpaper() {
+	    /**
+	     * Sets the average color from the current wallpaper.
+	    */
+	    
+	    if (!this.settings.get_boolean("vera-color-enabled"))
+		/* Disabled, bye */
 		return;
 	    
-	    this.update_background(true);
+	    string wallpaper = this.settings.get_strv("image-path")[0];
+	    
+	    try {
+		this.settings.set_string(
+		    "vera-color",
+		    AverageColor.pixbuf_average_value(
+			new Gdk.Pixbuf.from_file(wallpaper)
+		    )
+		);
+	    } catch (Error e) {}
 	    
 	}
 
@@ -454,7 +482,7 @@ namespace DesktopPlugin {
 		screen.get_monitor_geometry(i, out rectangle);
 		
 		/* Create window */
-		window = new DesktopWindow(rectangle, this.settings, this.display, i);
+		window = new DesktopWindow(rectangle, this.settings, this.application_launcher, this.display, i);
 		this.window_list += window;
 		
 		window.desktop_background.realize.connect(this.on_desktopbackground_realized);
@@ -504,6 +532,9 @@ namespace DesktopPlugin {
 	    } catch (Error ex) {
 		error("Unable to load plugin settings.");
 	    }
+	    
+	    /* Base application launcher */
+	    this.application_launcher = new ApplicationLauncher();
 	    
 	    /* Styling */
 	    Gtk.CssProvider css_provider = new Gtk.CssProvider();

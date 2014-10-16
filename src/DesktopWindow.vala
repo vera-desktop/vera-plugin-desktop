@@ -33,13 +33,16 @@ namespace DesktopPlugin {
 	public DesktopBackground desktop_background;
         public DesktopLauncher desktop_launcher;
 
+	public Gdk.Rectangle screen_size;
         private Gdk.Screen default_screen;
         private Gdk.Window root_window;
 
         public Display display;
         private Settings settings;
 	private Gtk.Box container;
-		
+	
+	private ApplicationLauncher application_launcher;
+	
 	public Tutorial tutorial;
 	private ulong tutorial_menu;
 	private ulong tutorial_launcher_opened;
@@ -169,7 +172,7 @@ namespace DesktopPlugin {
 	}
 		
 
-	public DesktopWindow(Gdk.Rectangle screen_size, Settings settings, Display display, int monitor_number) {
+	public DesktopWindow(Gdk.Rectangle screen_size, Settings settings, ApplicationLauncher application_launcher, Display display, int monitor_number) {
 	    /**
 	     * Constructs the DesktopWindow.
 	    */
@@ -183,7 +186,11 @@ namespace DesktopPlugin {
             //this.screen = Gdk.Screen.get_default();
             this.root_window = Gdk.get_default_root_window();
 
+	    this.screen_size = screen_size;
+	    
             this.settings = settings;
+	    
+	    this.application_launcher = application_launcher;
             
             this.display = display;
 
@@ -191,8 +198,8 @@ namespace DesktopPlugin {
             this.set_keep_below(true);
 
             /* Move and resize window */
-            this.move(screen_size.x, screen_size.y);
-            this.resize(screen_size.width, screen_size.height);
+            this.move(this.screen_size.x, this.screen_size.y);
+            this.resize(this.screen_size.width, this.screen_size.height);
 
 	    /* Create the container */
 	    this.container = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
@@ -200,7 +207,7 @@ namespace DesktopPlugin {
 
 	    /* Instantiate the background and launcher widgets... */
 	    this.desktop_background = new DesktopBackground(this, settings, monitor_number);
-	    this.desktop_launcher = new DesktopLauncher(this, settings);
+	    this.desktop_launcher = new DesktopLauncher(this, settings, application_launcher);
 	    
 	    this.container.pack_start(this.desktop_launcher, false, false, 0);
 	    this.container.pack_start(this.desktop_background, true, true, 0);

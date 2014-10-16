@@ -22,19 +22,21 @@
 libraries.desktop {
 	install-directory = $(options.library-directory)/vera/plugins
 	sources = \
+		applicationlauncher/ApplicationLauncher.vala \
+		applicationlauncher/DesktopLauncher.vala \
+		applicationlauncher/LauncherWidgets.vala \
 		desktop.vala \
 		DesktopWindow.vala \
 		DesktopBackground.vala \
 		AverageColor.vala \
 		workarounds/xsetproperty.c \
-		DesktopLauncher.vala \
 		Tutorial.vala
 	vala-compile-flags = --vapidir=./vapis
-	compile-flags = -O2 -flto
+	compile-flags = -O2 -flto -DGMENU_I_KNOW_THIS_IS_UNSTABLE
 	link-flags = -flto -Wl,--as-needed
 
-	vala-packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libpeas-1.0 cairo x11 vera
-	packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libpeas-1.0 cairo x11 vera
+	vala-packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libgnome-menu-3.0 gio-unix-2.0 libpeas-1.0 cairo x11 vera
+	packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libgnome-menu-3.0 gio-unix-2.0 libpeas-1.0 cairo x11 vera
 
 }
 
