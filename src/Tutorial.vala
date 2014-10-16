@@ -49,6 +49,9 @@ namespace DesktopPlugin {
 			this.text_content.set_line_wrap_mode(Pango.WrapMode.WORD);
 			this.text_content.set_justify(Gtk.Justification.CENTER);
 			
+			this.text_content.set_margin_top(20);
+			this.text_content.set_margin_bottom(20);
+			
 			Gdk.RGBA color = Gdk.RGBA();
 			color.parse("#13135E");
 			
