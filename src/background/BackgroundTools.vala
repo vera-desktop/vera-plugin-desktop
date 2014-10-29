@@ -183,6 +183,22 @@ namespace DesktopPlugin {
 			
 		}
 		
+		public static void fit(BackgroundInfo infos, Cairo.Context cx, Gdk.Pixbuf pixbuf) {
+			/**
+			 * Makes the image fit on the screen, and then paints it.
+			 * 
+			 * This is equivalent to call crop() with invert_ratio = true.
+			*/
+			
+			crop(
+				infos,
+				cx,
+				pixbuf,
+				true
+			);
+			
+		}
+		
 		public static void general(BackgroundInfo infos, Cairo.Context cx, Gdk.Pixbuf pixbuf) {
 			/**
 			 * Paints the given pixbuf in the context, without modifying

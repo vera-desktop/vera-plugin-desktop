@@ -162,6 +162,18 @@ namespace DesktopPlugin {
                     
                     BackgroundTools.crop(infos, context, pixbuf);
                     break;
+
+                case BackgroundMode.FIT:
+                    /*
+                     * Fit
+                    */
+                    
+                    message("Fit");
+                    
+                    BackgroundTools.color(context, this.background_color);
+                    
+                    BackgroundTools.fit(infos, context, pixbuf);
+                    break;
                 
                 case BackgroundMode.CENTER:
                     /*
