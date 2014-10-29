@@ -204,10 +204,10 @@ namespace DesktopPlugin {
 			 * Paints the given pixbuf in the context, without modifying
 			 * the image.
 			 * 
-			 * You can use this for the BackgroundMode.CENTER images, as
-			 * the only change are the coordinates in the BackgroundInfo
-			 * structs and they are determined automatically anyway
-			 * by get_background_info().
+			 * You can use this for the BackgroundMode.CENTER and
+			 * BackgroundMode.SCREEN images, as the only change are the 
+			 * coordinates in the BackgroundInfo struct and they are
+			 * determined automatically anyway by get_background_info().
 			*/
 			
 			Gdk.cairo_set_source_pixbuf(

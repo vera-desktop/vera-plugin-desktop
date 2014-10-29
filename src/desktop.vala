@@ -83,7 +83,7 @@ namespace DesktopPlugin {
 	    
 	}
 	
-	private void setup_backgrounds() {
+	private void update_background(bool set_vera_color = false) {
 	    
 	    Gdk.Screen scr = this.window_list[0].get_screen();
             weak X.Screen xscreen = X.Screen.get_screen(this.xlib_display.display, scr.get_number());
@@ -108,12 +108,6 @@ namespace DesktopPlugin {
                 scr.get_width(),
                 scr.get_height()
             );
-	    
-	}
-
-	private void update_background(bool set_vera_color = false) {
-
-	    this.setup_backgrounds();
 	    
 	    string[] backgrounds = this.settings.get_strv("image-path");
 	    BackgroundMode type = (BackgroundMode)this.settings.get_enum("background-mode");
@@ -150,6 +144,19 @@ namespace DesktopPlugin {
 		     * monitor, we already have the pixbuf... */
 			
 		    pixbuf = new Gdk.Pixbuf.from_file(path);
+		    if (type == BackgroundMode.SCREEN) {
+			/* Scale the image if we should */
+			int screen_width = scr.get_width();
+			int screen_height = scr.get_height();
+			
+			if (!(screen_width == pixbuf.get_width() && screen_height == pixbuf.get_height())) {
+			    pixbuf = pixbuf.scale_simple(
+				screen_width,
+				screen_height,
+				Gdk.InterpType.BILINEAR
+			    );
+			}
+		    }
 		}
 		
 		background_object.load_background(this.xlib_surface, pixbuf);
