@@ -30,11 +30,13 @@ namespace DesktopPlugin {
 	private ApplicationLauncher application_launcher;
 
 	public Display display;
+	private XlibDisplay? xlib_display = null;
 
 	public Settings settings;
 	private DesktopWindow[] window_list = new DesktopWindow[0];
 	
 	private X.Pixmap? xpixmap = null;
+	private Cairo.XlibSurface xlib_surface;
 	
 	private int monitor_number;
 	private int realized_backgrounds = 0;
@@ -80,8 +82,123 @@ namespace DesktopPlugin {
 	    } catch (Error e) {}
 	    
 	}
+	
+	private void setup_backgrounds() {
+	    
+	    Gdk.Screen scr = this.window_list[0].get_screen();
+            weak X.Screen xscreen = X.Screen.get_screen(this.xlib_display.display, scr.get_number());
+	    
+	    if (this.xpixmap != null)
+		X.free_pixmap(this.xlib_display.display, this.xpixmap);
 
-        private void update_background(bool set_vera_color = false) {
+            /* Create X Pixmap */
+            this.xpixmap = X.CreatePixmap(
+                this.xlib_display.display,
+                this.xlib_display.xrootwindow,
+                scr.get_width(),
+                scr.get_height(),
+                xscreen.default_depth_of_screen()
+            );
+                        
+            /* Create Cairo Surface */
+            this.xlib_surface = new Cairo.XlibSurface(
+                this.xlib_display.display,
+                (int)this.xpixmap,
+                Gdk.X11Visual.get_xvisual(scr.get_system_visual()),
+                scr.get_width(),
+                scr.get_height()
+            );
+	    
+	}
+
+	private void update_background(bool set_vera_color = false) {
+
+	    this.setup_backgrounds();
+	    
+	    string[] backgrounds = this.settings.get_strv("image-path");
+	    BackgroundMode type = (BackgroundMode)this.settings.get_enum("background-mode");
+	    
+	    /* Loop through the monitors */
+	    DesktopBackground background_object;
+	    Gdk.Pixbuf pixbuf = null;
+	    string path;
+	    for (int i = 0; i < this.window_list.length; i++) {
+		
+		background_object = this.window_list[i].desktop_background;
+		
+		/*
+		 * We should now select the background to paint.
+		 * The 'image-path' configuration property in the
+		 * gsettings schema is a string array, that contains
+		 * (in the correct order) the image to set for every
+		 * monitor.
+		 * When a monitor doesn't have its specified wallpaper,
+		 * we will fallback to the first.
+		 * 
+		 * Another exception is when the background-mode is
+		 * SCREEN: we will pick only the first wallpaper.
+		*/
+		
+		if (i < backgrounds.length && type != BackgroundMode.SCREEN) {
+		    path = backgrounds[i];
+		} else {
+		    path = backgrounds[0];
+		}
+
+		if (type != BackgroundMode.COLOR && !(type == BackgroundMode.SCREEN && i > 0)) {
+		    /* If the mode is SCREEN and this isn't the first
+		     * monitor, we already have the pixbuf... */
+			
+		    pixbuf = new Gdk.Pixbuf.from_file(path);
+		}
+		
+		background_object.load_background(this.xlib_surface, pixbuf);
+	    }
+
+	    /*
+	     * Now we need to set the root map on X.
+	     * This is needed because when we lack of true transparency
+	     * (i.e. we do not have a composite WM active) many applications
+	     * (such as tint2, xchat, many terminals, etc) rely on
+	     * the _XROOTPMAP_ID atom to create a fake transparency.
+	     * 
+	     * The specification talk also about the ESETROOT_PMAP_ID property,
+	     * but as we are a permanent (hopefully) client, we aren't going
+	     * to set it.
+	     * The PCManFM guys did the same (and I use this space to thank
+	     * them, most code in this source file is inspired by PCManFM's
+	     * desktop.c).
+	    */
+	    
+	    this.xlib_display.display.grab_server();
+	    
+	    X.Atom atm = this.xlib_display.display.intern_atom("_XROOTPMAP_ID", false);
+	    /*
+	     * I'm sorry.
+	     * Yes, I'm serious.
+	     * 
+	     * set_x_property() is nothing but an external C function
+	     * located in workarounds/xsetproperty.c.
+	     * 
+	     * Unfortunately, Vala's X.Display.change_property(), does not
+	     * work as it should, and we end up with nothing set as
+	     * _XROOTPMAP_ID in the best case, and with a fucked X in the
+	     * worst (bad Pixmap and some applications that rely on that
+	     * property may crash, it happened to me with xchat).
+	     * 
+	     * I hope to use a Vala equivalent when possible, in the mean
+	     * time, please accept this workaround.
+	    */
+	    set_x_property(this.xlib_display.display, this.xlib_display.xrootwindow, atm, this.xpixmap);
+
+	    //X.SetWindowBackgroundPixmap(xdisplay, xrootwindow, (int)xpixmap);
+	    X.ClearWindow(this.xlib_display.display, this.xlib_display.xrootwindow);
+	    this.xlib_display.display.flush();
+	    this.xlib_display.display.ungrab_server();
+
+	}
+
+        private void update_background_old(bool set_vera_color = false) {
 	    /**
 	     * Sets the background.
 	     * Currently this method is pretty crowded up,
@@ -524,6 +641,7 @@ namespace DesktopPlugin {
 	    
 	    try {
 		this.display = display;
+		this.xlib_display = (XlibDisplay)display;
 		    
 		this.settings = new Settings("org.semplicelinux.vera.desktop");
 

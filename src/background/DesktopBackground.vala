@@ -23,7 +23,7 @@ using Vera;
 
 namespace DesktopPlugin {
     
-    enum BackgroundMode {
+    public enum BackgroundMode {
         COLOR = 1,
         TILE = 2,
         STRETCH = 3,
@@ -32,8 +32,7 @@ namespace DesktopPlugin {
         CROP = 6,
         CENTER = 7;
     }
-        
-
+    
 	public class DesktopBackground : Gtk.EventBox {
 
 		/**
@@ -50,11 +49,17 @@ namespace DesktopPlugin {
         private bool painted = false;
 
         private Settings settings;
-
-        private weak Gdk.RGBA background_color;
-        private weak Gdk.Pixbuf pixbuf;
         
         public signal void menu_shown ();
+        
+        /* Background */
+        private Gdk.RGBA background_color = Gdk.RGBA();
+        private weak Gdk.Pixbuf current_background;
+        private BackgroundMode current_background_mode {
+            get {
+                return (BackgroundMode)this.settings.get_enum("background-mode");
+            }
+        }
 
         private bool on_button_pressed(Gdk.EventButton evnt) {
             
@@ -76,6 +81,72 @@ namespace DesktopPlugin {
 
             return true;
         }
+        
+        public void load_background(Cairo.XlibSurface xlib_surface, Gdk.Pixbuf? pixbuf = null) {
+            /**
+             * Loads the background.
+            */
+
+            Gdk.Rectangle geometry;
+            BackgroundMode mode = (pixbuf != null) ? this.current_background_mode : BackgroundMode.COLOR;
+            Gdk.Screen scr = this.parent_window.get_screen();
+            
+            /* Create a subsurface of the current monitor size */
+            scr.get_monitor_geometry(this.monitor_number, out geometry);
+            Cairo.Surface surface = new Cairo.Surface.for_rectangle(
+                xlib_surface,
+                geometry.x,
+                geometry.y,
+                geometry.width,
+                geometry.height
+            );
+            
+            /* ...and the relative Context */
+            Cairo.Context context = new Cairo.Context(surface);
+
+            string color = this.settings.get_string("background-color");
+            if (!this.background_color.parse(color)) {
+                /* Color has not been parsed correctly */
+                warning("Unable to parse background color, skipping...");
+                return;
+            }
+            
+            BackgroundInfo? infos = BackgroundTools.get_background_info(mode, geometry, pixbuf);
+            switch (mode) {
+                
+                case BackgroundMode.COLOR:
+                    /*
+                     * Colors!
+                    */
+                    
+                    message("COLOR");
+                    
+                    BackgroundTools.color(context, this.background_color);
+                    break;
+                
+                case BackgroundMode.TILE:
+                    /*
+                     * Tile
+                    */
+                    
+                    message("Tile");
+                    
+                    if (pixbuf.has_alpha)
+                        BackgroundTools.color(context, this.background_color);
+                    
+                    BackgroundTools.tile(infos, context, pixbuf);
+                    break;
+                    
+            }
+            
+            /* Set background */
+            Cairo.Pattern pattern = new Cairo.Pattern.for_surface(surface);
+            this.get_window().set_background_pattern(pattern);
+            
+            //X.free_pixmap(this.xlib_display.display, xpixmap);
+            
+        }
+                    
 
 		public DesktopBackground(DesktopWindow parent_window, Settings settings, int monitor_number) {
             /**
@@ -103,14 +174,19 @@ namespace DesktopPlugin {
             /* Xlibdisplay? */
             this.xlib_display = (XlibDisplay)this.parent_window.display;
 
-            this.background_color = new Gdk.RGBA();
-
             this.settings = settings;
-
-
+            
             this.set_app_paintable(true);
 
             this.button_press_event.connect(this.on_button_pressed);
+            
+            /*
+            this.realize.connect(
+                (widget) => {
+                    this.load_background();
+                }
+            );
+            */
 
 
 		}
