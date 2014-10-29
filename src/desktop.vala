@@ -25,6 +25,15 @@ namespace DesktopPlugin {
     
     extern void set_x_property(X.Display display, X.Window window, X.Atom atom, X.Pixmap pixmap);
 
+    public const string SUPPORTED_MIMETYPES[] = {
+	"image/bmp",
+	"image/gif",
+	"image/jpeg",
+	"image/x-portable-bitmap",
+	"image/png",
+	"image/xbm"
+    };
+
     public class Plugin : Peas.ExtensionBase, VeraPlugin {
 
 	private ApplicationLauncher application_launcher;
@@ -37,6 +46,8 @@ namespace DesktopPlugin {
 	
 	private X.Pixmap? xpixmap = null;
 	private Cairo.XlibSurface xlib_surface;
+	
+	private uint background_random_timeout = 0;
 	
 	private int monitor_number;
 	private int realized_backgrounds = 0;
@@ -56,6 +67,12 @@ namespace DesktopPlugin {
 		 * the average color...
 		*/
 		this.set_average_from_current_wallpaper();
+	    else if (key == "background-random-timeout" || 
+		(key == "background-random-enabled" && this.settings.get_boolean("background-random-enabled"))
+	    )
+		this.create_random_timeout();
+	    else if (key == "background-random-enabled" && !this.settings.get_boolean("background-random-enabled"))
+		this.remove_random_timeout();
 	    else if (!(key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled"))
 		this.update_background(true);
 	    
@@ -223,6 +240,117 @@ namespace DesktopPlugin {
 
 	}
 	
+	private string[] enumerate_wallpapers(string? given_path = null) {
+	    /**
+	     * Returns a list of wallpapers.
+	    */
+	    
+	    string[] wallpapers = new string[0];
+	    
+	    string[] excluded = this.settings.get_strv("background-exclude");
+	    string[] paths;
+	    if (given_path != null) {
+		paths = new string[1] { given_path };
+	    } else {
+		paths = this.settings.get_strv("background-search-paths");
+	    }
+	    
+	    File file;
+	    FileInfo info;
+	    FileEnumerator enumerator;
+	    string full_path;
+	    foreach (string path in paths) {
+		try {
+		    file = File.new_for_path(path);
+		    enumerator = file.enumerate_children(
+			(
+			    FileAttribute.STANDARD_NAME + "," +
+			    FileAttribute.STANDARD_TYPE + "," +
+			    FileAttribute.STANDARD_CONTENT_TYPE
+			),
+			FileQueryInfoFlags.NONE,
+			null
+		    );
+		    
+		    info = null;
+		    while ((info = enumerator.next_file(null)) != null) {
+			full_path = file.resolve_relative_path(info.get_name()).get_path();
+			if (info.get_file_type() == FileType.DIRECTORY) {
+			    foreach (string _path in this.enumerate_wallpapers(full_path)) {
+				wallpapers += _path;
+			    }
+			} else {
+			    if (info.get_content_type() in SUPPORTED_MIMETYPES && !(full_path in excluded)) {
+				wallpapers += full_path;
+			    }
+			}
+		    }
+		} catch (Error e) {
+		    warning("Error while enumerating wallpapers: %s", e.message);
+		}
+	    }
+	    
+	    if (given_path == null) {
+		/* Also add the manually included wallpapers */
+		foreach (string path in this.settings.get_strv("background-include")) {
+		    if (FileUtils.test(path, FileTest.EXISTS)) {
+			wallpapers += path;
+		    }
+		}
+	    }
+	    
+	    return wallpapers;
+	}
+	
+	private bool on_random_timeout_elapsed() {
+	    /**
+	     * Fired when the Random timeout has been elapsed.
+	    */
+	    	    
+	    Idle.add(
+		() => {
+		    
+		    string[] wallpapers = this.enumerate_wallpapers();
+		    if (wallpapers.length > 0) {
+			string random = wallpapers[Random.int_range(0, wallpapers.length-1)];
+			
+			this.settings.set_strv("image-path", { random });
+		    }
+		    
+		    
+		    return false;
+		}
+	    );
+	    
+	    return true;
+	}
+	
+	private void create_random_timeout() {
+	    /**
+	     * Creates the random timeout.
+	    */
+	    
+	    if (this.background_random_timeout > 0)
+		this.remove_random_timeout();
+	    	    
+	    this.background_random_timeout = Timeout.add_seconds(
+		this.settings.get_int("background-random-timeout") * 60,
+		this.on_random_timeout_elapsed
+	    );
+	}
+	
+	private void remove_random_timeout() {
+	    /**
+	     * Removes the random timeout.
+	    */
+	    
+	    if (this.background_random_timeout == 0)
+		return;
+	    	    
+	    Source.remove(this.background_random_timeout);
+	    this.background_random_timeout = 0;
+	}
+	
 	private void on_desktopbackground_realized(Gtk.Widget desktop_background) {
 	    /**
 	     * We use this method to track down the realized DesktopBackgrounds.
@@ -233,7 +361,13 @@ namespace DesktopPlugin {
 	    
 	    if (this.realized_backgrounds == this.monitor_number) {
 		/* We can draw the background */
-		this.update_background();
+		
+		if (this.settings.get_boolean("background-random-enabled")) {
+		    this.on_random_timeout_elapsed();
+		    this.create_random_timeout();
+		} else {
+		    this.update_background();
+		}
 	    }
 	}
 
