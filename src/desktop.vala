@@ -144,6 +144,21 @@ namespace DesktopPlugin {
 		     * monitor, we already have the pixbuf... */
 			
 		    pixbuf = new Gdk.Pixbuf.from_file(path);
+
+		    if (set_vera_color && i == 0) {
+			/* If this is the first monitor, obtain the
+			 * dominant color if we should */
+
+			if (!this.settings.get_boolean("vera-color-lock") &&
+			    this.settings.get_boolean("vera-color-enabled"))
+			{
+			    this.settings.set_string(
+				"vera-color",
+				AverageColor.pixbuf_average_value(pixbuf)
+			    );
+			}
+		    }
+
 		    if (type == BackgroundMode.SCREEN) {
 			/* Scale the image if we should */
 			int screen_width = scr.get_width();
