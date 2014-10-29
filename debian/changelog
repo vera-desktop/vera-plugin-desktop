@@ -1,3 +1,10 @@
+vera-plugin-desktop (0.23.0-1) devel; urgency=medium
+
+  * Refactored the background management.
+  * Background: added settings for wallpaper randomization.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Wed, 29 Oct 2014 19:58:49 +0100
+
 vera-plugin-desktop (0.22.0-1) devel; urgency=medium
 
   * desktop: recalculate the set wallpaper default color when disabling vera-control-lock.
