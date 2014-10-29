@@ -28,6 +28,17 @@
 			<summary>Single backgrounds to exclude</summary>
 			<description>Paths to single backgrounds to exclude from the backgrounds list.</description>
 		</key>
+		<key name="background-random-enabled" type="b">
+			<default>false</default>
+			<summary>Randomize backgrounds</summary>
+			<description>If enabled, the background will change every N mins, where N is the background-random-timeout value.</description>
+		</key>
+		<key name="background-random-timeout" type="i">
+			<range min="1" max="86400"/>
+			<default>30</default>
+			<summary>Randomize backgrounds (timeout)</summary>
+			<description>See background-random-enabled.</description>
+		</key>
 		<key name="background-mode" enum="org.semplicelinux.vera.desktop.BackgroundMode">
 			<default>"Fit"</default>
 			<summary>Background Mode</summary>
