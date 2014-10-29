@@ -25,16 +25,29 @@ namespace DesktopPlugin {
     
     extern void set_x_property(X.Display display, X.Window window, X.Atom atom, X.Pixmap pixmap);
 
+    public const string SUPPORTED_MIMETYPES[] = {
+	"image/bmp",
+	"image/gif",
+	"image/jpeg",
+	"image/x-portable-bitmap",
+	"image/png",
+	"image/xbm"
+    };
+
     public class Plugin : Peas.ExtensionBase, VeraPlugin {
 
 	private ApplicationLauncher application_launcher;
 
 	public Display display;
+	private XlibDisplay? xlib_display = null;
 
 	public Settings settings;
 	private DesktopWindow[] window_list = new DesktopWindow[0];
 	
 	private X.Pixmap? xpixmap = null;
+	private Cairo.XlibSurface xlib_surface;
+	
+	private uint background_random_timeout = 0;
 	
 	private int monitor_number;
 	private int realized_backgrounds = 0;
@@ -54,6 +67,12 @@ namespace DesktopPlugin {
 		 * the average color...
 		*/
 		this.set_average_from_current_wallpaper();
+	    else if (key == "background-random-timeout" || 
+		(key == "background-random-enabled" && this.settings.get_boolean("background-random-enabled"))
+	    )
+		this.create_random_timeout();
+	    else if (key == "background-random-enabled" && !this.settings.get_boolean("background-random-enabled"))
+		this.remove_random_timeout();
 	    else if (!(key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled"))
 		this.update_background(true);
 	    
@@ -80,141 +99,71 @@ namespace DesktopPlugin {
 	    } catch (Error e) {}
 	    
 	}
-
-        private void update_background(bool set_vera_color = false) {
+	
+	private void update_background(bool set_vera_color = false) {
 	    /**
-	     * Sets the background.
-	     * Currently this method is pretty crowded up,
-	     * but it does work nonetheless.
+	     * Updates the background.
 	    */
 	    
 	    Gdk.Screen scr = this.window_list[0].get_screen();
-	    Gdk.Rectangle geometry;
-	    int screen_num = scr.get_number();
-	    Gdk.Window root = scr.get_root_window();
-	    //Gdk.Window window = this.window_list[0].get_window();
-	    Gdk.Window window;
-	    Gdk.Display rootdisplay = root.get_display();
-	    weak X.Display xdisplay = Gdk.X11Display.get_xdisplay(rootdisplay);
-	    message("X screen number: %s", screen_num.to_string());
-	    weak X.Window xrootwindow = xdisplay.root_window(screen_num);
-	    Gdk.Pixbuf pixbuf = null;
-	    weak Gdk.RGBA background_color;
-
-	    Cairo.Context cx;
-	    Cairo.Pattern pattern;
-	    Cairo.XlibSurface bg;
-	    
-	    weak X.Screen xscreen = X.Screen.get_screen(xdisplay, screen_num);
-	    
-	    string path;
-	    string[] backgrounds = this.settings.get_strv("image-path");
-	    BackgroundMode type = (BackgroundMode)this.settings.get_enum("background-mode");
-	    string color = this.settings.get_string("background-color");
+            weak X.Screen xscreen = X.Screen.get_screen(this.xlib_display.display, scr.get_number());
 	    
 	    if (this.xpixmap != null)
-		X.free_pixmap(xdisplay, this.xpixmap);
+		X.free_pixmap(this.xlib_display.display, this.xpixmap);
+
+            /* Create X Pixmap */
+            this.xpixmap = X.CreatePixmap(
+                this.xlib_display.display,
+                this.xlib_display.xrootwindow,
+                scr.get_width(),
+                scr.get_height(),
+                xscreen.default_depth_of_screen()
+            );
+                        
+            /* Create Cairo Surface */
+            this.xlib_surface = new Cairo.XlibSurface(
+                this.xlib_display.display,
+                (int)this.xpixmap,
+                Gdk.X11Visual.get_xvisual(scr.get_system_visual()),
+                scr.get_width(),
+                scr.get_height()
+            );
 	    
-	    this.xpixmap = X.CreatePixmap(
-		xdisplay,
-		xrootwindow,
-		scr.get_width(),
-		scr.get_height(),
-		xscreen.default_depth_of_screen()
-	    );
+	    string[] backgrounds = this.settings.get_strv("image-path");
+	    BackgroundMode type = (BackgroundMode)this.settings.get_enum("background-mode");
 	    
-	    bg = new Cairo.XlibSurface(
-		xdisplay,
-		(int)this.xpixmap,
-		Gdk.X11Visual.get_xvisual(scr.get_system_visual()),
-		scr.get_width(),
-		scr.get_height()
-	    );
-	    
-	    
-	    /* Solid color, we do not need to loop through the monitors */
-	    if (type == BackgroundMode.COLOR) {
+	    /* Loop through the monitors */
+	    DesktopBackground background_object;
+	    Gdk.Pixbuf pixbuf = null;
+	    string path;
+	    for (int i = 0; i < this.window_list.length; i++) {
 		
-		/* FIXME: Memory leak when switching from a wallpaper? */
-		
-		background_color = Gdk.RGBA();
-		if (!background_color.parse(color)) {
-		    /* Color has not been parsed correctly */
-		    warning("Unable to parse background color, skipping...");
-		    return;
-		}
-		
-		cx = new Cairo.Context(bg);
+		background_object = this.window_list[i].desktop_background;
 		
 		/*
-		Gdk.cairo_set_source_rgba(cx, background_color);
-		cx.rectangle(0, 0, scr.get_width(), scr.get_height());
-		cx.fill();
-		cx.paint();
+		 * We should now select the background to paint.
+		 * The 'image-path' configuration property in the
+		 * gsettings schema is a string array, that contains
+		 * (in the correct order) the image to set for every
+		 * monitor.
+		 * When a monitor doesn't have its specified wallpaper,
+		 * we will fallback to the first.
+		 * 
+		 * Another exception is when the background-mode is
+		 * SCREEN: we will pick only the first wallpaper.
 		*/
 		
-		
-		cx.set_source_rgb(
-		    background_color.red,
-		    background_color.green,
-		    background_color.blue
-		);
-		cx.paint();
-
-		/* Create background pattern */
-		pattern = new Cairo.Pattern.for_surface(bg);
-		    
-		/*
-		 * Set the created pattern in the window, so that the user
-		 * actually sees a background :)
-		*/
-		foreach (DesktopWindow desktop_window in this.window_list) {
-		    window = desktop_window.desktop_background.get_window();
-		    window.set_background_pattern(pattern);
+		if (i < backgrounds.length && type != BackgroundMode.SCREEN) {
+		    path = backgrounds[i];
+		} else {
+		    path = backgrounds[0];
 		}
-		
-		if (pixbuf != null)
-		    pixbuf = null;
-	    } else {
-		
-		int src_w, src_h, dest_w, dest_h, x, y;
 
-		for (int i = 0; i < this.window_list.length; i++) {
-		    
-		    window = this.window_list[i].desktop_background.get_window();
-		    
-		    /*
-		     * We should now select the background to paint.
-		     * The 'image-path' configuration property in the
-		     * gsettings schema is a string array, that contains
-		     * (in the correct order) the image to set for every
-		     * monitor.
-		     * When a monitor doesn't have its specified wallpaper,
-		     * we will fallback to the first.
-		     * 
-		     * Another exception is when the background-mode is
-		     * SCREEN: we will pick only the first wallpaper.
-		    */
-		    
-		    if (i < backgrounds.length && type != BackgroundMode.SCREEN) {
-			path = backgrounds[i];
-		    } else {
-			path = backgrounds[0];
-		    }
-		    
-		    /*
-		     * We need to set a background image (and an eventual color,
-		     * if we have alpha)
-		    */
-		    
-		    scr.get_monitor_geometry(i, out geometry);
-		    
-		    if (!(type == BackgroundMode.SCREEN && i > 0)) {
-			/* If the mode is SCREEN and this isn't the first
-			 * monitor, we already have the pixbuf... */
+		if (type != BackgroundMode.COLOR && !(type == BackgroundMode.SCREEN && i > 0)) {
+		    /* If the mode is SCREEN and this isn't the first
+		     * monitor, we already have the pixbuf... */
 			
-			pixbuf = new Gdk.Pixbuf.from_file(path);
-		    }
+		    pixbuf = new Gdk.Pixbuf.from_file(path);
 
 		    if (set_vera_color && i == 0) {
 			/* If this is the first monitor, obtain the
@@ -230,178 +179,24 @@ namespace DesktopPlugin {
 			}
 		    }
 
-
-		    message("Monitor " + i.to_string());
-		    message("x: " + geometry.x.to_string());
-		    message("y: " + geometry.y.to_string());
-
-		    x = 0;
-		    y = 0;
-		    src_w = pixbuf.get_width();
-		    src_h = pixbuf.get_height();
-		    dest_w = geometry.width;
-		    dest_h = geometry.height;
-		    		    
 		    if (type == BackgroundMode.SCREEN) {
-			x = -geometry.x;
-			y = -geometry.y;
-		    }
-		    
-		    /* 
-		     * Create a subsurface for the main XlibSurface.
-		     * Things we paint here will also go to the main Surface
-		     * (bg), that will be applied as _XROOTPMAP_ID.
-		     * 
-		     * We will apply this subsurface to individual monitors.
-		    */
-		    Cairo.Surface pbg = new Cairo.Surface.for_rectangle(
-			bg,
-			geometry.x,
-			geometry.y,
-			dest_w,
-			dest_h
-		    );
-		    
-		    cx = new Cairo.Context(pbg);
-		    
-		    /*
-		     * We should now determine if we need to paint also
-		     * the color before the pixbuf.
-		     * We need to do that when:
-		     *  - The image has alpha (transparent parts)
-		     *  - BackgroundMode.CENTER
-		     *  - BackgroundMode.FIT
-		    */
-		    
-		    if (pixbuf.has_alpha || type == BackgroundMode.CENTER || type == BackgroundMode.FIT) {
-			background_color = Gdk.RGBA();
-			if (!background_color.parse(color)) {
-			    /* Color has not been parsed correctly */
-			    warning("Unable to parse background color, skipping...");
-			    return;
+			/* Scale the image if we should */
+			int screen_width = scr.get_width();
+			int screen_height = scr.get_height();
+			
+			if (!(screen_width == pixbuf.get_width() && screen_height == pixbuf.get_height())) {
+			    pixbuf = pixbuf.scale_simple(
+				screen_width,
+				screen_height,
+				Gdk.InterpType.BILINEAR
+			    );
 			}
-			Gdk.cairo_set_source_rgba(cx, background_color);
-			cx.rectangle(0, 0, dest_w, dest_h);
-			cx.fill();
 		    }
-		    
-		    
-		    switch (type) {
-			/* Tile */
-			case BackgroundMode.TILE:
-			    /*
-			     * Cairo Patterns have a neat way to do tiling,
-			     * but we need to have the surface image-sized,
-			     * which will be then a no-go when we'll put
-			     * the thing as the _XROOTPMAP_ID.
-			     * 
-			     * So we do tiling the hard way.
-			     * There aren't problems when painting outside
-			     * the bounds of our subsurface, as cairo
-			     * will not make changes there.
-			    */
-			    int tile_w = 0, tile_h;
-			    
-			    while (tile_w < geometry.width) {
-				
-				tile_h = 0;
-				while (tile_h < geometry.height) {
-				    Gdk.cairo_set_source_pixbuf(cx, pixbuf, tile_w, tile_h);
-				    cx.paint();
-				    
-				    tile_h += src_h;
-				}
-
-				tile_w += src_w;				
-				
-			    }
-			    
-			    
-			    break;
-			/* Stretch */
-			case BackgroundMode.STRETCH:
-			    
-			    message("Monitor " + i.to_string());
-			    message("dest_w: " + dest_w.to_string());
-			    message("dest_h: " + dest_h.to_string());
-			    if (!(dest_w == src_w && dest_h == src_h)) {
-				pixbuf = pixbuf.scale_simple(dest_w, dest_h, Gdk.InterpType.BILINEAR);
-			    }
-			    		    
-			    break;
-			/* Screen */
-			case BackgroundMode.SCREEN:
-			
-			    if (type == BackgroundMode.SCREEN && i > 0)
-				break;
-			
-			    int screen_width = scr.get_width();
-			    int screen_height = scr.get_height();
-			    
-			    if (!(screen_width == src_w && screen_height == src_h)) {
-				pixbuf = pixbuf.scale_simple(screen_width, screen_height, Gdk.InterpType.BILINEAR);
-			    }
-			    
-			    break;
-			    
-			/* Fit and crop */
-			case BackgroundMode.FIT:
-			case BackgroundMode.CROP:
-
-			    if (dest_w != src_w || dest_h != src_h) {
-				double w_ratio = (float)dest_w / src_w;
-				double h_ratio = (float)dest_h / src_h;
-				double ratio;
-				
-				if (type == BackgroundMode.FIT) {
-				    ratio = double.min(w_ratio, h_ratio);
-				} else {
-				    ratio = double.max(w_ratio, h_ratio);
-				}
-				
-				if (ratio != 1.0) {
-				    				    
-				    src_w = ((int)Math.lround(src_w * ratio));
-				    src_h = ((int)Math.lround(src_h * ratio));
-				    
-				    pixbuf = pixbuf.scale_simple(
-					src_w,
-					src_h,
-					Gdk.InterpType.BILINEAR
-				    );
-				}
-				
-				x = (dest_w - src_w) / 2;
-				y = (dest_h - src_h) / 2;
-			    }
-			    
-			    break;
-			/* Center */
-			case BackgroundMode.CENTER:
-			    x = (dest_w - src_w) / 2;
-			    y = (dest_h - src_h) / 2;
-			    break;
-			    
-		    }
-		    
-		    if (type != BackgroundMode.TILE)
-			Gdk.cairo_set_source_pixbuf(cx, pixbuf, x, y);
-		    
-		    cx.paint();
-		    		    
-		    /* Create background pattern */
-		    pattern = new Cairo.Pattern.for_surface(pbg);
-		    
-		    /*
-		     * Set the created pattern in the window, so that the user
-		     * actually sees a background :)
-		    */
-		    window.set_background_pattern(pattern);
-		    		    
 		}
 		
+		background_object.load_background(this.xlib_surface, pixbuf);
 	    }
-		        
+
 	    /*
 	     * Now we need to set the root map on X.
 	     * This is needed because when we lack of true transparency
@@ -417,9 +212,9 @@ namespace DesktopPlugin {
 	     * desktop.c).
 	    */
 	    
-	    xdisplay.grab_server();
+	    this.xlib_display.display.grab_server();
 	    
-	    X.Atom atm = xdisplay.intern_atom("_XROOTPMAP_ID", false);
+	    X.Atom atm = this.xlib_display.display.intern_atom("_XROOTPMAP_ID", false);
 	    /*
 	     * I'm sorry.
 	     * Yes, I'm serious.
@@ -436,14 +231,125 @@ namespace DesktopPlugin {
 	     * I hope to use a Vala equivalent when possible, in the mean
 	     * time, please accept this workaround.
 	    */
-	    set_x_property(xdisplay, xrootwindow, atm, this.xpixmap);
+	    set_x_property(this.xlib_display.display, this.xlib_display.xrootwindow, atm, this.xpixmap);
 
 	    //X.SetWindowBackgroundPixmap(xdisplay, xrootwindow, (int)xpixmap);
-	    X.ClearWindow(xdisplay, xrootwindow);
-	    xdisplay.flush();
-	    xdisplay.ungrab_server();
+	    X.ClearWindow(this.xlib_display.display, this.xlib_display.xrootwindow);
+	    this.xlib_display.display.flush();
+	    this.xlib_display.display.ungrab_server();
+
+	}
+	
+	private string[] enumerate_wallpapers(string? given_path = null) {
+	    /**
+	     * Returns a list of wallpapers.
+	    */
 	    
-        }
+	    string[] wallpapers = new string[0];
+	    
+	    string[] excluded = this.settings.get_strv("background-exclude");
+	    string[] paths;
+	    if (given_path != null) {
+		paths = new string[1] { given_path };
+	    } else {
+		paths = this.settings.get_strv("background-search-paths");
+	    }
+	    
+	    File file;
+	    FileInfo info;
+	    FileEnumerator enumerator;
+	    string full_path;
+	    foreach (string path in paths) {
+		try {
+		    file = File.new_for_path(path);
+		    enumerator = file.enumerate_children(
+			(
+			    FileAttribute.STANDARD_NAME + "," +
+			    FileAttribute.STANDARD_TYPE + "," +
+			    FileAttribute.STANDARD_CONTENT_TYPE
+			),
+			FileQueryInfoFlags.NONE,
+			null
+		    );
+		    
+		    info = null;
+		    while ((info = enumerator.next_file(null)) != null) {
+			full_path = file.resolve_relative_path(info.get_name()).get_path();
+			if (info.get_file_type() == FileType.DIRECTORY) {
+			    foreach (string _path in this.enumerate_wallpapers(full_path)) {
+				wallpapers += _path;
+			    }
+			} else {
+			    if (info.get_content_type() in SUPPORTED_MIMETYPES && !(full_path in excluded)) {
+				wallpapers += full_path;
+			    }
+			}
+		    }
+		} catch (Error e) {
+		    warning("Error while enumerating wallpapers: %s", e.message);
+		}
+	    }
+	    
+	    if (given_path == null) {
+		/* Also add the manually included wallpapers */
+		foreach (string path in this.settings.get_strv("background-include")) {
+		    if (FileUtils.test(path, FileTest.EXISTS)) {
+			wallpapers += path;
+		    }
+		}
+	    }
+	    
+	    return wallpapers;
+	}
+	
+	private bool on_random_timeout_elapsed() {
+	    /**
+	     * Fired when the Random timeout has been elapsed.
+	    */
+	    	    
+	    Idle.add(
+		() => {
+		    
+		    string[] wallpapers = this.enumerate_wallpapers();
+		    if (wallpapers.length > 0) {
+			string random = wallpapers[Random.int_range(0, wallpapers.length-1)];
+			
+			this.settings.set_strv("image-path", { random });
+		    }
+		    
+		    
+		    return false;
+		}
+	    );
+	    
+	    return true;
+	}
+	
+	private void create_random_timeout() {
+	    /**
+	     * Creates the random timeout.
+	    */
+	    
+	    if (this.background_random_timeout > 0)
+		this.remove_random_timeout();
+	    	    
+	    this.background_random_timeout = Timeout.add_seconds(
+		this.settings.get_int("background-random-timeout") * 60,
+		this.on_random_timeout_elapsed
+	    );
+	}
+	
+	private void remove_random_timeout() {
+	    /**
+	     * Removes the random timeout.
+	    */
+	    
+	    if (this.background_random_timeout == 0)
+		return;
+	    	    
+	    Source.remove(this.background_random_timeout);
+	    this.background_random_timeout = 0;
+	}
 	
 	private void on_desktopbackground_realized(Gtk.Widget desktop_background) {
 	    /**
@@ -455,7 +361,13 @@ namespace DesktopPlugin {
 	    
 	    if (this.realized_backgrounds == this.monitor_number) {
 		/* We can draw the background */
-		this.update_background();
+		
+		if (this.settings.get_boolean("background-random-enabled")) {
+		    this.on_random_timeout_elapsed();
+		    this.create_random_timeout();
+		} else {
+		    this.update_background();
+		}
 	    }
 	}
 
@@ -524,6 +436,7 @@ namespace DesktopPlugin {
 	    
 	    try {
 		this.display = display;
+		this.xlib_display = (XlibDisplay)display;
 		    
 		this.settings = new Settings("org.semplicelinux.vera.desktop");
 

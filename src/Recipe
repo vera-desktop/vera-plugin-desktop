@@ -25,10 +25,11 @@ libraries.desktop {
 		applicationlauncher/ApplicationLauncher.vala \
 		applicationlauncher/DesktopLauncher.vala \
 		applicationlauncher/LauncherWidgets.vala \
+		background/DesktopBackground.vala \
+		background/BackgroundTools.vala \
+		background/AverageColor.vala \
 		desktop.vala \
 		DesktopWindow.vala \
-		DesktopBackground.vala \
-		AverageColor.vala \
 		workarounds/xsetproperty.c \
 		Tutorial.vala
 	vala-compile-flags = --vapidir=./vapis
