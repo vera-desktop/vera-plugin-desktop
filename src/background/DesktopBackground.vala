@@ -118,9 +118,7 @@ namespace DesktopPlugin {
                     /*
                      * Colors!
                     */
-                    
-                    message("COLOR");
-                    
+                                        
                     BackgroundTools.color(context, this.background_color);
                     break;
                 
@@ -128,9 +126,7 @@ namespace DesktopPlugin {
                     /*
                      * Tile
                     */
-                    
-                    message("Tile");
-                    
+                                        
                     if (pixbuf.has_alpha)
                         BackgroundTools.color(context, this.background_color);
                     
@@ -141,9 +137,7 @@ namespace DesktopPlugin {
                     /*
                      * Stretch
                     */
-                    
-                    message("Stretch");
-                    
+                                        
                     if (pixbuf.has_alpha)
                         BackgroundTools.color(context, this.background_color);
                     
@@ -154,9 +148,7 @@ namespace DesktopPlugin {
                     /*
                      * Screen
                     */
-                    
-                    message("Screen");
-                    
+                                        
                     if (pixbuf.has_alpha)
                         BackgroundTools.color(context, this.background_color);
                     
@@ -167,9 +159,7 @@ namespace DesktopPlugin {
                     /*
                      * Crop
                     */
-                    
-                    message("Crop");
-                    
+                                        
                     if (pixbuf.has_alpha)
                         BackgroundTools.color(context, this.background_color);
                     
@@ -180,9 +170,7 @@ namespace DesktopPlugin {
                     /*
                      * Fit
                     */
-                    
-                    message("Fit");
-                    
+                                        
                     BackgroundTools.color(context, this.background_color);
                     
                     BackgroundTools.fit(infos, context, pixbuf);
@@ -192,9 +180,7 @@ namespace DesktopPlugin {
                     /*
                      * Center
                     */
-                    
-                    message("Center");
-                    
+                                        
                     BackgroundTools.color(context, this.background_color);
                     
                     BackgroundTools.general(infos, context, pixbuf);
