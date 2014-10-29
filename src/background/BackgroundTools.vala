@@ -114,6 +114,25 @@ namespace DesktopPlugin {
 			}
 			
 		}
+		
+		public static void stretch(BackgroundInfo infos, Cairo.Context cx, Gdk.Pixbuf pixbuf) {
+			/**
+			 * Stretches the given pixbuf in the context
+			*/
+			
+			Gdk.cairo_set_source_pixbuf(
+				cx,
+				(
+					(!(infos.dest_w == infos.src_w && infos.dest_h == infos.src_h)) ?
+					pixbuf.scale_simple(infos.dest_w, infos.dest_h, Gdk.InterpType.BILINEAR) :
+					pixbuf
+				),
+				infos.x,
+				infos.y
+			);
+			cx.paint();
+			
+		}
 
 	}
 	

@@ -136,6 +136,19 @@ namespace DesktopPlugin {
                     
                     BackgroundTools.tile(infos, context, pixbuf);
                     break;
+                
+                case BackgroundMode.STRETCH:
+                    /*
+                     * Stretch
+                    */
+                    
+                    message("Stretch");
+                    
+                    if (pixbuf.has_alpha)
+                        BackgroundTools.color(context, this.background_color);
+                    
+                    BackgroundTools.stretch(infos, context, pixbuf);
+                    break;
                     
             }
             
