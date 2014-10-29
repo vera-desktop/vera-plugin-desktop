@@ -150,6 +150,19 @@ namespace DesktopPlugin {
                     BackgroundTools.stretch(infos, context, pixbuf);
                     break;
                 
+                case BackgroundMode.CROP:
+                    /*
+                     * Crop
+                    */
+                    
+                    message("Crop");
+                    
+                    if (pixbuf.has_alpha)
+                        BackgroundTools.color(context, this.background_color);
+                    
+                    BackgroundTools.crop(infos, context, pixbuf);
+                    break;
+                
                 case BackgroundMode.CENTER:
                     /*
                      * Center

@@ -136,6 +136,53 @@ namespace DesktopPlugin {
 			
 		}
 		
+		public static void crop(BackgroundInfo infos, Cairo.Context cx, Gdk.Pixbuf pixbuf, bool invert_ratio = false) {
+			/**
+			 * Crops the given pixbuf and then paints it.
+			 * 
+			 * If invert_ratio = true, the image will instead fit on the
+			 * screen.
+			*/
+			
+			int x = infos.x;
+			int y = infos.y;
+			int new_w = infos.src_w;
+			int new_h = infos.src_h;
+			bool should_resize = false;
+			
+			if (infos.dest_w != infos.src_w || infos.dest_h != infos.src_h) {
+				
+				double w_ratio = (float)infos.dest_w / infos.src_w;
+				double h_ratio = (float)infos.dest_h / infos.src_h;
+				double ratio = invert_ratio ? double.min(w_ratio, h_ratio) : double.max(w_ratio, h_ratio);
+				
+				if (ratio != 1.0) {
+					
+					should_resize = true;
+					new_w = ((int)Math.lround(infos.src_w * ratio));
+					new_h = ((int)Math.lround(infos.src_h * ratio));
+					
+				}
+				
+				x = (infos.dest_w - new_w) / 2;
+				y = (infos.dest_h - new_h) / 2;
+				
+			}
+			
+			Gdk.cairo_set_source_pixbuf(
+				cx,
+				(
+					should_resize ?
+					pixbuf.scale_simple(new_w, new_h, Gdk.InterpType.BILINEAR) :
+					pixbuf
+				),
+				x,
+				y
+			);
+			cx.paint();
+			
+		}
+		
 		public static void general(BackgroundInfo infos, Cairo.Context cx, Gdk.Pixbuf pixbuf) {
 			/**
 			 * Paints the given pixbuf in the context, without modifying
