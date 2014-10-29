@@ -47,19 +47,22 @@ namespace DesktopPlugin {
 				return null;
 			
 			BackgroundInfo infos = BackgroundInfo();
-			
-			if (mode == BackgroundMode.SCREEN) {
-				infos.x = -geometry.x;
-				infos.y = -geometry.y;
-			} else {
-				infos.x = 0;
-				infos.y = 0;
-			}
-						
+
 			infos.dest_w = geometry.width;
 			infos.dest_h = geometry.height;
 			infos.src_w = pixbuf.get_width();
 			infos.src_h = pixbuf.get_height();
+			
+			if (mode == BackgroundMode.SCREEN) {
+				infos.x = -geometry.x;
+				infos.y = -geometry.y;
+			} else if (mode == BackgroundMode.CENTER) {
+				infos.x = (infos.dest_w - infos.src_w) / 2;
+				infos.y = (infos.dest_h - infos.src_h) / 2;
+			} else {
+				infos.x = 0;
+				infos.y = 0;
+			}
 			
 			return infos;
 			
@@ -127,6 +130,27 @@ namespace DesktopPlugin {
 					pixbuf.scale_simple(infos.dest_w, infos.dest_h, Gdk.InterpType.BILINEAR) :
 					pixbuf
 				),
+				infos.x,
+				infos.y
+			);
+			cx.paint();
+			
+		}
+		
+		public static void general(BackgroundInfo infos, Cairo.Context cx, Gdk.Pixbuf pixbuf) {
+			/**
+			 * Paints the given pixbuf in the context, without modifying
+			 * the image.
+			 * 
+			 * You can use this for the BackgroundMode.CENTER images, as
+			 * the only change are the coordinates in the BackgroundInfo
+			 * structs and they are determined automatically anyway
+			 * by get_background_info().
+			*/
+			
+			Gdk.cairo_set_source_pixbuf(
+				cx,
+				pixbuf,
 				infos.x,
 				infos.y
 			);
