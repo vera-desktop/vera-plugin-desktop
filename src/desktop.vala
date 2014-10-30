@@ -61,20 +61,35 @@ namespace DesktopPlugin {
 	     * update_background().
 	    */
 	    
-	    if (key == "vera-color-lock" && !this.settings.get_boolean("vera-color-lock"))
-		/*
-		 * vera-color-lock just disabled, we need to recalculate
-		 * the average color...
-		*/
-		this.set_average_from_current_wallpaper();
-	    else if (key == "background-random-timeout" || 
-		(key == "background-random-enabled" && this.settings.get_boolean("background-random-enabled"))
-	    )
-		this.create_random_timeout();
-	    else if (key == "background-random-enabled" && !this.settings.get_boolean("background-random-enabled"))
-		this.remove_random_timeout();
-	    else if (!(key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled"))
-		this.update_background(true);
+	    switch (key) {
+		
+		case "vera-color-lock":
+		    if (!this.settings.get_boolean("vera-color-lock"))
+			/*
+			 * vera-color-lock just disabled, we need to recalculate
+			 * the average color...
+			*/
+			this.set_average_from_current_wallpaper();
+		    
+		    break;
+		
+		case "background-random-timeout":
+		case "background-random-enabled":
+		    if (this.settings.get_boolean("background-random-enabled"))
+			this.create_random_timeout();
+		    else
+			this.remove_random_timeout();
+		    
+		    break;
+		
+		case "background-color":
+		case "image-path":
+		case "background-mode":
+		    this.update_background(true);
+		    
+		    break;
+		    
+	    }
 	    
 	}
 	
