@@ -40,12 +40,12 @@
 			<description>See background-random-enabled.</description>
 		</key>
 		<key name="background-mode" enum="org.semplicelinux.vera.desktop.BackgroundMode">
-			<default>"Fit"</default>
+			<default>"Crop"</default>
 			<summary>Background Mode</summary>
 			<description>Determines how the wallpaper is rendered.</description>
 		</key>
 		<key name="image-path" type="as">
-			<default>["/usr/share/backgrounds/semplice-default_2560x1440.png"]</default>
+			<default>["/usr/share/backgrounds/semplice-numb/blue-sunset_2048x1365.jpg"]</default>
 			<summary>Image Path</summary>
 			<description>Path to the wallpaper.</description>
 		</key>
@@ -60,7 +60,7 @@
 			<description>If true, the @vera-color property will be exported to the GTK+ theme.</description>
 		</key>
 		<key name="vera-color" type="s">
-			<default>"#131494"</default>
+			<default>"rgb(16,71,151)"</default>
 			<summary>Vera color</summary>
 			<description>The @vera-color property exported to the GTK+ theme.</description>
 		</key>
