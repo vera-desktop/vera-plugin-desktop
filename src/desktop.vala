@@ -86,6 +86,8 @@ namespace DesktopPlugin {
 		case "image-path":
 		case "background-mode":
 		    this.update_background(true);
+		    if (this.settings.get_boolean("background-random-enabled"))
+			this.reset_random_timeout();
 		    
 		    break;
 		    
@@ -364,6 +366,18 @@ namespace DesktopPlugin {
 	    	    
 	    Source.remove(this.background_random_timeout);
 	    this.background_random_timeout = 0;
+	}
+	
+	private void reset_random_timeout() {
+	    /**
+	     * Resets the random timeout.
+	     * 
+	     * This is the equivalent of calling remove_random_timeout()
+	     * and create_random_timeout().
+	    */
+	    
+	    this.remove_random_timeout();
+	    this.create_random_timeout();
 	}
 	
 	private void on_desktopbackground_realized(Gtk.Widget desktop_background) {
