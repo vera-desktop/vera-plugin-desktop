@@ -1,3 +1,9 @@
+vera-plugin-desktop (0.24.0-2) devel; urgency=medium
+
+  * debian/control: compile using vala-0.26
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Thu, 30 Oct 2014 17:27:14 +0100
+
 vera-plugin-desktop (0.24.0-1) devel; urgency=medium
 
   * schema: changed defaults in preparation for the 7-preview.
