@@ -1,3 +1,12 @@
+vera-plugin-desktop (0.24.0-1) devel; urgency=medium
+
+  * schema: changed defaults in preparation for the 7-preview.
+  * desktop.vala: refactored on_settings_changed().
+  * desktop.vala: reset the eventual random timeout if the wallpaper has been changed.
+  * debian/control: depend on libgnome-menu-3-dev.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Thu, 30 Oct 2014 16:07:06 +0100
+
 vera-plugin-desktop (0.23.0-1) devel; urgency=medium
 
   * Refactored the background management.
