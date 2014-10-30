@@ -3,7 +3,7 @@ Section: x11
 Priority: optional
 Maintainer: Eugenio Paolantonio (g7) <me@medesimo.eu>
 Build-Depends: debhelper (>= 8.0.0), build-essential, bake, libvera-dev,
- libvera-vapi, libgee-dev, libcairo2-dev, libpeas-dev, libgtk-3-dev, valac-0.24
+ libvera-vapi, libgee-dev, libgnome-menu-3-dev, libcairo2-dev, libpeas-dev, libgtk-3-dev, valac-0.24
 Standards-Version: 3.9.5
 Homepage: https://semplice-linux.org/
 Vcs-Git: https://github.com/vera-desktop/vera-plugin-desktop.git
