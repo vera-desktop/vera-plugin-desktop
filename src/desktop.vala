@@ -61,20 +61,37 @@ namespace DesktopPlugin {
 	     * update_background().
 	    */
 	    
-	    if (key == "vera-color-lock" && !this.settings.get_boolean("vera-color-lock"))
-		/*
-		 * vera-color-lock just disabled, we need to recalculate
-		 * the average color...
-		*/
-		this.set_average_from_current_wallpaper();
-	    else if (key == "background-random-timeout" || 
-		(key == "background-random-enabled" && this.settings.get_boolean("background-random-enabled"))
-	    )
-		this.create_random_timeout();
-	    else if (key == "background-random-enabled" && !this.settings.get_boolean("background-random-enabled"))
-		this.remove_random_timeout();
-	    else if (!(key == "vera-color" || key == "vera-color-lock" || key == "vera-color-enabled"))
-		this.update_background(true);
+	    switch (key) {
+		
+		case "vera-color-lock":
+		    if (!this.settings.get_boolean("vera-color-lock"))
+			/*
+			 * vera-color-lock just disabled, we need to recalculate
+			 * the average color...
+			*/
+			this.set_average_from_current_wallpaper();
+		    
+		    break;
+		
+		case "background-random-timeout":
+		case "background-random-enabled":
+		    if (this.settings.get_boolean("background-random-enabled"))
+			this.create_random_timeout();
+		    else
+			this.remove_random_timeout();
+		    
+		    break;
+		
+		case "background-color":
+		case "image-path":
+		case "background-mode":
+		    this.update_background(true);
+		    if (this.settings.get_boolean("background-random-enabled"))
+			this.reset_random_timeout();
+		    
+		    break;
+		    
+	    }
 	    
 	}
 	
@@ -349,6 +366,18 @@ namespace DesktopPlugin {
 	    	    
 	    Source.remove(this.background_random_timeout);
 	    this.background_random_timeout = 0;
+	}
+	
+	private void reset_random_timeout() {
+	    /**
+	     * Resets the random timeout.
+	     * 
+	     * This is the equivalent of calling remove_random_timeout()
+	     * and create_random_timeout().
+	    */
+	    
+	    this.remove_random_timeout();
+	    this.create_random_timeout();
 	}
 	
 	private void on_desktopbackground_realized(Gtk.Widget desktop_background) {
