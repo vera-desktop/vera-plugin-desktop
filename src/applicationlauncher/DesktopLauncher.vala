@@ -212,6 +212,7 @@ namespace DesktopPlugin {
 	    this.current_item++;
 	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app, 4, this.current_item);
 
+/*
 	    this.results_list.append(out iter);
 	    this.current_item++;
 	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app, 4, this.current_item);
@@ -220,6 +221,7 @@ namespace DesktopPlugin {
 	    this.results_list.append(out iter);
 	    this.current_item++;
 	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app, 4, this.current_item);
+*/
 	    
 
 	}
