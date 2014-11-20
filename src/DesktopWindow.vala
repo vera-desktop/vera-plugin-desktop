@@ -30,8 +30,8 @@ namespace DesktopPlugin {
 	 * use.
 	*/
 
-	public DesktopBackground desktop_background;
-        public DesktopLauncher desktop_launcher;
+	public DesktopBackground desktop_background { get; private set; }
+	public DesktopLauncher desktop_launcher { get; private set; }
 
 	public Gdk.Rectangle screen_size;
         private Gdk.Screen default_screen;

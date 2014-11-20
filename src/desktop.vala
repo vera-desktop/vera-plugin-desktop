@@ -397,6 +397,11 @@ namespace DesktopPlugin {
 		} else {
 		    this.update_background();
 		}
+		
+		/* Finally reset normal background color */
+		foreach (DesktopWindow window in this.window_list) {
+		    window.get_style_context().remove_class("initialization");
+		}
 	    }
 	}
 
@@ -425,6 +430,9 @@ namespace DesktopPlugin {
 		/* Create window */
 		window = new DesktopWindow(rectangle, this.settings, this.application_launcher, this.display, i);
 		this.window_list += window;
+
+		/* Make the background black before rendering the wallpapers */
+		window.get_style_context().add_class("initialization");
 		
 		window.desktop_background.realize.connect(this.on_desktopbackground_realized);
 		window.show_all();
@@ -481,6 +489,7 @@ namespace DesktopPlugin {
 	    /* Styling */
 	    Gtk.CssProvider css_provider = new Gtk.CssProvider();
 	    css_provider.load_from_data(@"
+		.initialization { background-color: #000; }
 		#tutorial { background: transparent; }
 		.tutorial-page { background-color: @vera-color; }",
 		-1
