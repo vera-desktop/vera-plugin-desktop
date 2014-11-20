@@ -1,3 +1,11 @@
+vera-plugin-desktop (0.25.0-1) devel; urgency=medium
+
+  * Set a black background before rendering
+  * DesktopLauncher: comment the redundant entries
+    inserted before to debug things up
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Thu, 20 Nov 2014 16:49:27 +0100
+
 vera-plugin-desktop (0.24.0-2) devel; urgency=medium
 
   * debian/control: compile using vala-0.26
