@@ -36,7 +36,7 @@ namespace DesktopPlugin {
 						"vera-"
 					)
 				),
-				GMenu.TreeFlags.NONE
+				GMenu.TreeFlags.SORT_DISPLAY_NAME
 			);
 			
 			/* Load */
@@ -60,7 +60,7 @@ namespace DesktopPlugin {
 			string name, description;
 			name = infos.get_name();
 			description = infos.get_description();
-			
+						
 			if ((name != null && keyword.down() in name.down()) || (description != null && keyword.down() in description.down())) {
 				/* Yay */
 				
@@ -70,7 +70,7 @@ namespace DesktopPlugin {
 			}
 		}
 		
-		public void search(string keyword, GMenu.TreeDirectory? directory = null) {
+		public void search(string keyword, GMenu.TreeDirectory? directory = null, uint? _internal_id = null) {
 			/**
 			 * Makes an application search using the specified keyword.
 			 * 
@@ -79,8 +79,14 @@ namespace DesktopPlugin {
 			 * useful you must subscribe to that signal too.
 			*/
 			
-			uint internal_id = this.random.next_int();
-			this.SEARCH_ID = internal_id;
+			
+			uint internal_id;
+			if (_internal_id == null) {
+				internal_id = this.random.next_int();
+				this.SEARCH_ID = internal_id;
+			} else {
+				internal_id = _internal_id;
+			}
 			
 			if (directory == null)
 				this.search_started();
@@ -98,7 +104,7 @@ namespace DesktopPlugin {
 				if (type == GMenu.TreeItemType.DIRECTORY) {
 					/* Directory, re run this method on it */
 					
-					this.search(keyword, iter.get_directory());
+					this.search(keyword, iter.get_directory(), internal_id);
 					
 				} else if (type == GMenu.TreeItemType.ENTRY) {
 					/* Entry */
@@ -117,7 +123,6 @@ namespace DesktopPlugin {
 			
 			//if (directory == null) {
 			if (true) {
-				message("ECCHEPPALLE HO FINITO");
 				this.search_finished();
 			}
 			
