@@ -25,9 +25,13 @@ namespace DesktopPlugin {
     
     public class PageButton : Gtk.RadioButton {
     
+	public int page_number { get; private set; }
+    
 	public PageButton(Gtk.RadioButton? radio_group_member, int page_number) {
 	    
 	    Object();
+	    
+	    this.page_number = page_number;
 	    
 	    this.group = radio_group_member;
 	    ((Gtk.ToggleButton)this).draw_indicator = false;
@@ -42,10 +46,7 @@ namespace DesktopPlugin {
 	/**
 	 * The pages of the launcher.
 	*/
-	
-	private PageButton first_page = null;
-	private int count = 0;
-	
+		
 	public signal void page_changed(int new_page);
 	
 	public LauncherPages() {
@@ -71,28 +72,34 @@ namespace DesktopPlugin {
 	     * Creates/Removes buttons.
 	    */
 	    
+	    PageButton first_page = null;
 	    PageButton button;
-	    int current;
+	    int count = 0;
 	    
-	    while (this.count < new_page) {
-		this.count++;
+	    /* Destroy current buttons */
+	    this.foreach(
+		(child) => {
+		    child.destroy();
+		}
+	    );
+	    
+	    while (count < new_page) {
+		count++;
 		
-		button = new PageButton(this.first_page, this.count);
-		current = this.count; 
+		button = new PageButton(first_page, count);
 		button.toggled.connect(
 		    (button) => {
-			this.page_changed(current);
+			this.page_changed(((PageButton)button).page_number);
 		    }
 		);
 		button.show();
 		this.pack_start(button, false, false, 5);
 		
-		if (this.first_page == null) {
+		if (first_page == null) {
 		    /* This is the first page, save it */
-		    this.first_page = button;
+		    first_page = button;
 		}
 	    }
-	    
 	}
 	
     }
