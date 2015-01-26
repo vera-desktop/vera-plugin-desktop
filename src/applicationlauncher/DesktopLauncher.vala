@@ -245,11 +245,11 @@ namespace DesktopPlugin {
 	    */
 	    
 	    Gtk.TreeIter iter;
-	    this.results_list.get_iter(out iter, path);
+	    this.results_filter.get_iter(out iter, path);
 	    
 	    Value infos;
-	    this.results_list.get_value(iter, 3, out infos);
-	    
+	    this.results_filter.get_value(iter, 3, out infos);
+	    	    
 	    new Launcher(((DesktopAppInfo)infos).get_commandline().split(" ")).launch();
 	    
 	    /* Close everything */
