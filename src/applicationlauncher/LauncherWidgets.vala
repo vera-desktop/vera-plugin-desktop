@@ -23,11 +23,73 @@ using Vera;
 
 namespace DesktopPlugin {
     
+    public class ArrowButton : Gtk.Button {
+	
+	public enum Position {
+	    LEFT,
+	    RIGHT
+	}
+	
+	public ArrowButton.Position position { get; construct set; }
+		
+	public ArrowButton(ArrowButton.Position position) {
+	    /**
+	     * Creates an ArrowButton.
+	    */
+	    
+	    Object();
+	    
+	    this.position = position;
+	    
+	    this.set_label((this.position == ArrowButton.Position.LEFT) ? "<" : ">");
+	    
+	}
+	
+    }
+    
+    public class PageHandler : Gtk.Box {
+	
+	public signal void page_changed(bool next);
+	
+	private void on_arrowbutton_clicked(Gtk.Button button) {
+	    /**
+	     * Fired when an arrowbutton has been clicked.
+	    */
+	    
+	    this.page_changed((((ArrowButton)button).position == ArrowButton.Position.RIGHT));
+	    
+	}
+	
+	public PageHandler() {
+	    
+	    Object(orientation: Gtk.Orientation.HORIZONTAL);
+	    
+	    this.halign = Gtk.Align.CENTER;
+	    this.valign = Gtk.Align.CENTER;
+	    
+	    /* Add arrow buttons */
+	    ArrowButton button;
+	    ArrowButton.Position position;
+	    for (int i = 0; i < 2; i++) {
+		position = (ArrowButton.Position)i;
+		button = new ArrowButton(position);
+		
+		button.clicked.connect(this.on_arrowbutton_clicked);
+		
+		this.pack_start(button, false, false, 5);
+	    }
+	    
+	}
+	
+    }
+	
+	
+    
     public class PageButton : Gtk.RadioButton {
     
 	public int page_number { get; private set; }
     
-	public PageButton(Gtk.RadioButton? radio_group_member, int page_number) {
+	public PageButton(Gtk.RadioButton? radio_group_member, owned int page_number) {
 	    
 	    Object();
 	    
@@ -72,6 +134,8 @@ namespace DesktopPlugin {
 	     * Creates/Removes buttons.
 	    */
 	    
+	    message("Updating page number (%d)", new_page);
+	    
 	    PageButton first_page = null;
 	    PageButton button;
 	    int count = 0;
@@ -88,8 +152,12 @@ namespace DesktopPlugin {
 		
 		button = new PageButton(first_page, count);
 		button.toggled.connect(
-		    (button) => {
-			this.page_changed(((PageButton)button).page_number);
+		    (_button) => {
+			PageButton page_button = (PageButton)button;
+			if (page_button.get_active()) {
+			    message("BUTTON CLICKED %d", ((PageButton)page_button).page_number);
+			    this.page_changed(((PageButton)page_button).page_number);
+			}
 		    }
 		);
 		button.show();
@@ -100,6 +168,12 @@ namespace DesktopPlugin {
 		    first_page = button;
 		}
 	    }
+	    
+	    this.foreach(
+		(child) => {
+		    message("BUTTON IS %d", ((PageButton)child).page_number);
+		}
+	    );
 	}
 	
     }
