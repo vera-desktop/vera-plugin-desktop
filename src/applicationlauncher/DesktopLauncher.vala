@@ -101,6 +101,7 @@ namespace DesktopPlugin {
 		this.results_filter.refilter();
 	    } else {
 		/* Start text not valid anymore, search again */
+		this.current_item = 0;
 		this.results_list.clear();
 		this.start_text = keyword;
 	        this.application_launcher.search(keyword);
@@ -162,7 +163,6 @@ namespace DesktopPlugin {
 	    if (!this.search_mode_enabled)
 		return;
 	    
-	    this.current_item = 0;
 	    this.current_search_length = 0;
 	    
 	}
