@@ -72,13 +72,18 @@ namespace DesktopPlugin {
 			this.root = this.tree.get_root_directory();
 		}
 		
-		public static bool item_matches_keyword(string keyword, DesktopAppInfo infos) {
+		public static bool item_matches_keyword(string keyword, DesktopAppInfo? infos) {
 			/**
 			 * Returns true if the informations in the given DesktopAppInfo matches
 			 * the given keyword, false if not.
 			*/
 			
 			string name, description;
+			
+			if (infos == null) {
+				return false;
+			}
+			
 			name = infos.get_name();
 			description = infos.get_description();
 			
