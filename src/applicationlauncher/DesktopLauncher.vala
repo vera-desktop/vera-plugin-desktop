@@ -196,7 +196,7 @@ namespace DesktopPlugin {
 	    
 	    Gdk.Pixbuf pixbuf = icon_theme.lookup_by_gicon(app.get_icon(),48,0).load_icon();
 	    this.current_search_length++;
-	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app, 4, this.current_item);
+	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app);
 	    
 
 	}
@@ -287,12 +287,11 @@ namespace DesktopPlugin {
 	    this.container.pack_start(this.results_revealer, false, false, 0);
 	    
 	    this.results_list = new Gtk.ListStore(
-		5,
+		4,
 		typeof(string),
 		typeof(Gdk.Pixbuf),
 		typeof(string),
-		typeof(DesktopAppInfo),
-		typeof(int)
+		typeof(DesktopAppInfo)
 	    );
 	    this.results_filter = new Gtk.TreeModelFilter(this.results_list, null);
 	    this.results_filter.set_visible_func(this.determine_item_visibility);
