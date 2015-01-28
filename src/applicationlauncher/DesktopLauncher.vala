@@ -62,7 +62,6 @@ namespace DesktopPlugin {
 	
 	private PageHandler page_handler;
 	
-	private bool searching = false;
 	private string start_text = null;
 	
 	private void on_search_changed() {
@@ -119,22 +118,27 @@ namespace DesktopPlugin {
 	     * the current keyword, False if not.
 	    */
 	    
-	    int item_number;
-
-	    if (!this.searching) {
 		
-		Value infos;
-		model.get_value(iter, 3, out infos);
-		
-		if (!(
-		    ApplicationLauncher.item_matches_keyword(
-			this.search.get_text(),
-			(DesktopAppInfo)infos
-		    )
-		)) {
-		    return false;
-		}
+	    Value infos;
+	    model.get_value(iter, 3, out infos);
+	    
+	    /*
+	     * FIXME: This check is redundant on a fresh search (as it's
+	     * done by ApplicationLauncher too) and thus we need to
+	     * avoid that.
+	     * There is no reliable method currently to find if this item
+	     * has been freshly added or this is just a refilter(), so we
+	     * need to execute this regardless of the search state.
+	    */
+	    if (!(
+		ApplicationLauncher.item_matches_keyword(
+		    this.search.get_text(),
+		    (DesktopAppInfo)infos
+		)
+	    )) {
+		return false;
 	    }
+
 	    
 	    /* We need to update the count */
 	    this.current_item++;
@@ -158,9 +162,6 @@ namespace DesktopPlugin {
 	    if (!this.search_mode_enabled)
 		return;
 	    
-	    message("Search started");
-	    
-	    this.searching = true;
 	    this.current_item = 0;
 	    this.current_search_length = 0;
 	    
@@ -173,10 +174,6 @@ namespace DesktopPlugin {
 
 	    if (!this.search_mode_enabled)
 		return;
-
-	    message("Search finished");
-	    
-	    this.searching = false;
 	    
 	    message("num pages %d", (int)Math.ceil(this.current_item / this.max_item_number));
 	    
