@@ -35,8 +35,11 @@ namespace DesktopPlugin {
 	private int max_item_number;
 	
 	private int current_item = 0;
-	private int current_page = 1;
-
+	private int last_page = 1;
+	private int current_search_length = 0;
+	
+	public int current_page { get; set; default=1; }
+	
 	public signal void launcher_closed();
 	public signal void launcher_opened();
 	
@@ -59,9 +62,8 @@ namespace DesktopPlugin {
 	private Gtk.ListStore results_list;
 	private Gtk.TreeModelFilter results_filter;
 	
-	private LauncherPages launcher_pages;
+	private PageHandler page_handler;
 	
-	private bool searching = false;
 	private string start_text = null;
 	
 	private void on_search_changed() {
@@ -101,6 +103,7 @@ namespace DesktopPlugin {
 		this.results_filter.refilter();
 	    } else {
 		/* Start text not valid anymore, search again */
+		this.current_item = 0;
 		this.results_list.clear();
 		this.start_text = keyword;
 	        this.application_launcher.search(keyword);
@@ -118,49 +121,39 @@ namespace DesktopPlugin {
 	     * the current keyword, False if not.
 	    */
 	    
-	    int item_number;
-
-	    if (!this.searching) {
 		
-		Value infos;
-		model.get_value(iter, 3, out infos);
-		
-		if (!(
-		    ApplicationLauncher.item_matches_keyword(
-			this.search.get_text(),
-			(DesktopAppInfo)infos
-		    )
-		)) {
-		    return false;
-		}
-		
-		/* We need to update the count */
-		this.current_item++;
-		//((Gtk.ListStore)model).set_value(iter, 4, this.current_item);
-		
-		item_number = this.current_item;
-	    } else {
-		Value count;
-		model.get_value(iter, 4, out count);
-		
-		item_number = (int)count;
-	    }
+	    Value infos;
+	    model.get_value(iter, 3, out infos);
 	    
+	    /*
+	     * FIXME: This check is redundant on a fresh search (as it's
+	     * done by ApplicationLauncher too) and thus we need to
+	     * avoid that.
+	     * There is no reliable method currently to find if this item
+	     * has been freshly added or this is just a refilter(), so we
+	     * need to execute this regardless of the search state.
+	    */
+	    if (!(
+		ApplicationLauncher.item_matches_keyword(
+		    this.search.get_text(),
+		    (DesktopAppInfo)infos
+		)
+	    )) {
+		return false;
+	    }
+
+	    
+	    /* We need to update the count */
+	    this.current_item++;
+
 	    Value name;
 	    model.get_value(iter, 0, out name);
-	    message("Item number for %s is %d", (string)name, item_number);
-	    
-	    message("Max item number * current_page: %d", this.max_item_number*this.current_page);
-	    message("Max item number * current_page-1: %d", this.max_item_number*(this.current_page-1));
 
-	    if (item_number > this.max_item_number*this.current_page || item_number <= this.max_item_number*(this.current_page-1)) {
-		/* We need to *force* hide this item */
-		message("Hiding");
+	    if (this.current_item > this.max_item_number*this.current_page || this.current_item <= this.max_item_number*(this.current_page-1)) {
+		/* Not the right page, hiding */
 		return false;
 	    }
 	    
-	    /* Here? ok! */
-	    message("Showing");
 	    return true;
 	}
 	
@@ -172,10 +165,7 @@ namespace DesktopPlugin {
 	    if (!this.search_mode_enabled)
 		return;
 	    
-	    message("Search started");
-	    
-	    this.searching = true;
-	    this.current_item = 0;
+	    this.current_search_length = 0;
 	    
 	}
 	
@@ -186,14 +176,12 @@ namespace DesktopPlugin {
 
 	    if (!this.search_mode_enabled)
 		return;
-
-	    message("Search finished");
 	    
-	    this.searching = false;
+	    this.last_page = int.max(1, (int)Math.ceil(this.current_item / this.max_item_number));
 	    
-	    message("num pages %d", (int)Math.ceil(this.current_item / this.max_item_number));
-	    this.launcher_pages.update_page_number((int)Math.ceil(this.current_item / this.max_item_number));
-
+	    /* Reset current page to 1 */
+	    this.current_page = 1;
+	    
 	}
 	
 	private void on_application_found(DesktopAppInfo? app) {
@@ -209,31 +197,18 @@ namespace DesktopPlugin {
 	    this.results_list.append(out iter);
 	    
 	    Gdk.Pixbuf pixbuf = icon_theme.lookup_by_gicon(app.get_icon(),48,0).load_icon();
-	    this.current_item++;
-	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app, 4, this.current_item);
-
-/*
-	    this.results_list.append(out iter);
-	    this.current_item++;
-	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app, 4, this.current_item);
-
-
-	    this.results_list.append(out iter);
-	    this.current_item++;
-	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app, 4, this.current_item);
-*/
+	    this.current_search_length++;
+	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app);
 	    
 
 	}
 	
-	private void on_launcher_page_changed(int new_page) {
+	private void on_launcher_page_changed(bool next) {
 	    /**
 	     * Fired when the page has been changed.
 	    */
-	    
-	    message("New page! %d", new_page);
-	    
-	    this.current_page = new_page;
+	    	    	    
+	    this.current_page = next ? this.current_page+1 : this.current_page-1;
 	    this.current_item = 0;
 	    this.results_filter.refilter();
 	    
@@ -245,11 +220,11 @@ namespace DesktopPlugin {
 	    */
 	    
 	    Gtk.TreeIter iter;
-	    this.results_list.get_iter(out iter, path);
+	    this.results_filter.get_iter(out iter, path);
 	    
 	    Value infos;
-	    this.results_list.get_value(iter, 3, out infos);
-	    
+	    this.results_filter.get_value(iter, 3, out infos);
+	    	    
 	    new Launcher(((DesktopAppInfo)infos).get_commandline().split(" ")).launch();
 	    
 	    /* Close everything */
@@ -281,7 +256,7 @@ namespace DesktopPlugin {
             this.parent_window = parent_window;
             this.settings = settings;
 	    this.application_launcher = application_launcher;
-	    
+	    	    
 	    /* Calculate max_item_number */
 	    int max_columns, max_rows;
 	    max_columns = (int)Math.floor(this.parent_window.screen_size.width / ITEM_WIDTH);
@@ -314,25 +289,15 @@ namespace DesktopPlugin {
 	    this.container.pack_start(this.results_revealer, false, false, 0);
 	    
 	    this.results_list = new Gtk.ListStore(
-		5,
+		4,
 		typeof(string),
 		typeof(Gdk.Pixbuf),
 		typeof(string),
-		typeof(DesktopAppInfo),
-		typeof(int)
+		typeof(DesktopAppInfo)
 	    );
 	    this.results_filter = new Gtk.TreeModelFilter(this.results_list, null);
 	    this.results_filter.set_visible_func(this.determine_item_visibility);
-	    /*
-	    this.results_scrolledwindow.set_size_request(
-		-1,
-		500
-	    );
-	    this.results_scrolledwindow.set_min_content_height(
-		//200 : 100 = x : 70
-		(this.parent_window.screen_size.height*20)/100
-	    );
-	    */
+
 	    this.results_view = new Gtk.IconView.with_model(this.results_filter);
 	    this.results_view.set_activate_on_single_click(true);
 	    this.results_view.set_text_column(0);
@@ -342,17 +307,40 @@ namespace DesktopPlugin {
 	    this.results_view.set_item_padding(2);
 	    this.results_container.pack_start(this.results_view);
 
-	    /* Pages */
-	    this.launcher_pages = new LauncherPages();
-	    this.launcher_pages.page_changed.connect(this.on_launcher_page_changed);
-	    this.results_container.pack_start(this.launcher_pages, false, false, 5);
+	    /* Pages */    
+	    this.page_handler = new PageHandler();
+	    this.page_handler.page_changed.connect(this.on_launcher_page_changed);
+	    this.results_container.pack_start(this.page_handler, false, false, 5);
+	    
+	    /* Disable pages buttons */
+	    this.bind_property(
+		"current-page",
+		this.page_handler.buttons.get(ArrowButton.Position.LEFT),
+		"sensitive",
+		BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE,
+		(binding, source, ref target) => {
+		    target = !(source == 1);
+		    return true;
+		},
+		null
+	    );
+	    this.bind_property(
+		"current-page",
+		this.page_handler.buttons.get(ArrowButton.Position.RIGHT),
+		"sensitive",
+		BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE,
+		(binding, source, ref target) => {
+		    target = !(source == this.last_page);
+		    return true;
+		},
+		null
+	    );
 
 	    /* "No results found" message */
 	    this.no_results_found = new Gtk.Label("No results found.");
 	    this.results_container.pack_start(this.no_results_found);
 	    
 	    this.internet_search = new Gtk.Label(null);
-	    
 	    
 	    
 	    /* Events */

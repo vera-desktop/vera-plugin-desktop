@@ -23,11 +23,82 @@ using Vera;
 
 namespace DesktopPlugin {
     
-    public class PageButton : Gtk.RadioButton {
-    
-	public PageButton(Gtk.RadioButton? radio_group_member, int page_number) {
+    public class ArrowButton : Gtk.Button {
+	
+	public enum Position {
+	    LEFT,
+	    RIGHT
+	}
+	
+	public ArrowButton.Position position { get; construct set; }
+		
+	public ArrowButton(ArrowButton.Position position) {
+	    /**
+	     * Creates an ArrowButton.
+	    */
 	    
 	    Object();
+	    
+	    this.position = position;
+	    
+	    this.set_label((this.position == ArrowButton.Position.LEFT) ? "<" : ">");
+	    
+	}
+	
+    }
+    
+    public class PageHandler : Gtk.Box {
+	
+	public signal void page_changed(bool next);
+	
+	public HashTable<ArrowButton.Position, ArrowButton> buttons =
+	    new HashTable<ArrowButton.Position, ArrowButton>(direct_hash, direct_equal);
+	
+	private void on_arrowbutton_clicked(Gtk.Button button) {
+	    /**
+	     * Fired when an arrowbutton has been clicked.
+	    */
+	    
+	    this.page_changed((((ArrowButton)button).position == ArrowButton.Position.RIGHT));
+	    
+	}
+	
+	public PageHandler() {
+	    
+	    Object(orientation: Gtk.Orientation.HORIZONTAL);
+	    
+	    this.halign = Gtk.Align.CENTER;
+	    this.valign = Gtk.Align.CENTER;
+	    
+	    /* Add arrow buttons */
+	    ArrowButton button;
+	    ArrowButton.Position position;
+	    for (int i = 0; i < 2; i++) {
+		position = (ArrowButton.Position)i;
+		button = new ArrowButton(position);
+		
+		button.clicked.connect(this.on_arrowbutton_clicked);
+		
+		this.pack_start(button, false, false, 5);
+		
+		this.buttons.set(position, button);
+	    }
+	    
+	}
+	
+    }
+	
+	
+    
+    public class PageButton : Gtk.RadioButton {
+    
+	public int page_number { get; private set; }
+    
+	public PageButton(Gtk.RadioButton? radio_group_member, owned int page_number) {
+	    
+	    Object();
+	    
+	    this.page_number = page_number;
 	    
 	    this.group = radio_group_member;
 	    ((Gtk.ToggleButton)this).draw_indicator = false;
@@ -42,10 +113,7 @@ namespace DesktopPlugin {
 	/**
 	 * The pages of the launcher.
 	*/
-	
-	private PageButton first_page = null;
-	private int count = 0;
-	
+		
 	public signal void page_changed(int new_page);
 	
 	public LauncherPages() {
@@ -71,28 +139,46 @@ namespace DesktopPlugin {
 	     * Creates/Removes buttons.
 	    */
 	    
-	    PageButton button;
-	    int current;
+	    message("Updating page number (%d)", new_page);
 	    
-	    while (this.count < new_page) {
-		this.count++;
+	    PageButton first_page = null;
+	    PageButton button;
+	    int count = 0;
+	    
+	    /* Destroy current buttons */
+	    this.foreach(
+		(child) => {
+		    child.destroy();
+		}
+	    );
+	    
+	    while (count < new_page) {
+		count++;
 		
-		button = new PageButton(this.first_page, this.count);
-		current = this.count; 
+		button = new PageButton(first_page, count);
 		button.toggled.connect(
-		    (button) => {
-			this.page_changed(current);
+		    (_button) => {
+			PageButton page_button = (PageButton)button;
+			if (page_button.get_active()) {
+			    message("BUTTON CLICKED %d", ((PageButton)page_button).page_number);
+			    this.page_changed(((PageButton)page_button).page_number);
+			}
 		    }
 		);
 		button.show();
 		this.pack_start(button, false, false, 5);
 		
-		if (this.first_page == null) {
+		if (first_page == null) {
 		    /* This is the first page, save it */
-		    this.first_page = button;
+		    first_page = button;
 		}
 	    }
 	    
+	    this.foreach(
+		(child) => {
+		    message("BUTTON IS %d", ((PageButton)child).page_number);
+		}
+	    );
 	}
 	
     }

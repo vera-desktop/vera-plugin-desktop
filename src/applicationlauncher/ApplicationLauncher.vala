@@ -1,3 +1,24 @@
+/*
+ * vera-plugin-desktop - desktop plugin for vera
+ * Copyright (C) 2014  Eugenio "g7" Paolantonio and the Semplice Project
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Authors:
+ *     Eugenio "g7" Paolantonio <me@medesimo.eu>
+*/
+
 using Vera;
 
 namespace DesktopPlugin {
@@ -36,7 +57,7 @@ namespace DesktopPlugin {
 						"vera-"
 					)
 				),
-				GMenu.TreeFlags.NONE
+				GMenu.TreeFlags.SORT_DISPLAY_NAME
 			);
 			
 			/* Load */
@@ -51,13 +72,18 @@ namespace DesktopPlugin {
 			this.root = this.tree.get_root_directory();
 		}
 		
-		public static bool item_matches_keyword(string keyword, DesktopAppInfo infos) {
+		public static bool item_matches_keyword(string keyword, DesktopAppInfo? infos) {
 			/**
 			 * Returns true if the informations in the given DesktopAppInfo matches
 			 * the given keyword, false if not.
 			*/
 			
 			string name, description;
+			
+			if (infos == null) {
+				return false;
+			}
+			
 			name = infos.get_name();
 			description = infos.get_description();
 			
@@ -70,7 +96,7 @@ namespace DesktopPlugin {
 			}
 		}
 		
-		public void search(string keyword, GMenu.TreeDirectory? directory = null) {
+		public void search(string keyword, GMenu.TreeDirectory? directory = null, uint? _internal_id = null) {
 			/**
 			 * Makes an application search using the specified keyword.
 			 * 
@@ -79,8 +105,14 @@ namespace DesktopPlugin {
 			 * useful you must subscribe to that signal too.
 			*/
 			
-			uint internal_id = this.random.next_int();
-			this.SEARCH_ID = internal_id;
+			
+			uint internal_id;
+			if (_internal_id == null) {
+				internal_id = this.random.next_int();
+				this.SEARCH_ID = internal_id;
+			} else {
+				internal_id = _internal_id;
+			}
 			
 			if (directory == null)
 				this.search_started();
@@ -98,7 +130,7 @@ namespace DesktopPlugin {
 				if (type == GMenu.TreeItemType.DIRECTORY) {
 					/* Directory, re run this method on it */
 					
-					this.search(keyword, iter.get_directory());
+					this.search(keyword, iter.get_directory(), internal_id);
 					
 				} else if (type == GMenu.TreeItemType.ENTRY) {
 					/* Entry */
@@ -115,9 +147,7 @@ namespace DesktopPlugin {
 				}
 			}
 			
-			//if (directory == null) {
-			if (true) {
-				message("ECCHEPPALLE HO FINITO");
+			if (directory == null) {
 				this.search_finished();
 			}
 			
