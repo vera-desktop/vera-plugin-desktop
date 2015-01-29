@@ -51,6 +51,9 @@ namespace DesktopPlugin {
 	
 	public signal void page_changed(bool next);
 	
+	public HashTable<ArrowButton.Position, ArrowButton> buttons =
+	    new HashTable<ArrowButton.Position, ArrowButton>(direct_hash, direct_equal);
+	
 	private void on_arrowbutton_clicked(Gtk.Button button) {
 	    /**
 	     * Fired when an arrowbutton has been clicked.
@@ -77,6 +80,8 @@ namespace DesktopPlugin {
 		button.clicked.connect(this.on_arrowbutton_clicked);
 		
 		this.pack_start(button, false, false, 5);
+		
+		this.buttons.set(position, button);
 	    }
 	    
 	}
