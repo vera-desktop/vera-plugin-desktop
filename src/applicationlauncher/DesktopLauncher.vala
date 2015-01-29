@@ -177,7 +177,7 @@ namespace DesktopPlugin {
 	    if (!this.search_mode_enabled)
 		return;
 	    
-	    this.last_page = (int)Math.ceil(this.current_item / this.max_item_number);
+	    this.last_page = int.max(1, (int)Math.ceil(this.current_item / this.max_item_number));
 	    
 	    /* Reset current page to 1 */
 	    this.current_page = 1;
