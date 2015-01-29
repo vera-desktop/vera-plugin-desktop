@@ -35,9 +35,11 @@ namespace DesktopPlugin {
 	private int max_item_number;
 	
 	private int current_item = 0;
+	private int last_page = 1;
 	private int current_search_length = 0;
-	private int current_page = 1;
-
+	
+	public int current_page { get; set; default=1; }
+	
 	public signal void launcher_closed();
 	public signal void launcher_opened();
 	
@@ -175,7 +177,10 @@ namespace DesktopPlugin {
 	    if (!this.search_mode_enabled)
 		return;
 	    
-	    message("num pages %d", (int)Math.ceil(this.current_item / this.max_item_number));
+	    this.last_page = (int)Math.ceil(this.current_item / this.max_item_number);
+	    
+	    /* Reset current page to 1 */
+	    this.current_page = 1;
 	    
 	}
 	
@@ -251,7 +256,7 @@ namespace DesktopPlugin {
             this.parent_window = parent_window;
             this.settings = settings;
 	    this.application_launcher = application_launcher;
-	    
+	    	    
 	    /* Calculate max_item_number */
 	    int max_columns, max_rows;
 	    max_columns = (int)Math.floor(this.parent_window.screen_size.width / ITEM_WIDTH);
@@ -306,6 +311,30 @@ namespace DesktopPlugin {
 	    this.page_handler = new PageHandler();
 	    this.page_handler.page_changed.connect(this.on_launcher_page_changed);
 	    this.results_container.pack_start(this.page_handler, false, false, 5);
+	    
+	    /* Disable pages buttons */
+	    this.bind_property(
+		"current-page",
+		this.page_handler.buttons.get(ArrowButton.Position.LEFT),
+		"sensitive",
+		BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE,
+		(binding, source, ref target) => {
+		    target = !(source == 1);
+		    return true;
+		},
+		null
+	    );
+	    this.bind_property(
+		"current-page",
+		this.page_handler.buttons.get(ArrowButton.Position.RIGHT),
+		"sensitive",
+		BindingFlags.DEFAULT | BindingFlags.SYNC_CREATE,
+		(binding, source, ref target) => {
+		    target = !(source == this.last_page);
+		    return true;
+		},
+		null
+	    );
 
 	    /* "No results found" message */
 	    this.no_results_found = new Gtk.Label("No results found.");
