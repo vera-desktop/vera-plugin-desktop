@@ -1,3 +1,21 @@
+vera-plugin-desktop (0.26.0-1) devel; urgency=medium
+
+  * ApplicationLauncher: do not reset the SEARCH_ID while iterating on TreeDirectories.
+  * LauncherWidgets: simplify the button logic by always recreating the buttons on the update_page_number call.
+  * DesktopLauncher: get the activated item from the filtered list.
+  * LauncherWidgets: add new widgets: ArrowButton and PageHandler.
+  * DesktopLauncher: switch to ArrowButton and PageHandler.
+  * DesktopLauncher: remove the current_item column from the main ListStore as it's not needed anymore.
+  * DesktopLauncher: drop DesktopLauncher.searching global state variable.
+  * DesktopLauncher: reset the current_item before actually calling the search process.
+  * ApplicationLauncher: reject null DesktopAppInfos on item_matches_keyword() method.
+  * ApplicationLauncher: emit search_finished event when the entire search has been completed.
+  * LauncherWidgets: store the ArrowButtons in a new public HashTable in the PageHandler() class.
+  * DesktopLauncher: disable sensitiveness of the LEFT/RIGHT ArrowButtons as needed.
+  * DesktopLauncher: ensure that the last_page count is of *at least* 1.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Thu, 29 Jan 2015 16:14:02 +0100
+
 vera-plugin-desktop (0.25.0-1) devel; urgency=medium
 
   * Set a black background before rendering
