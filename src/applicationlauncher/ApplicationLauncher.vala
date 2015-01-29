@@ -147,8 +147,7 @@ namespace DesktopPlugin {
 				}
 			}
 			
-			//if (directory == null) {
-			if (true) {
+			if (directory == null) {
 				this.search_finished();
 			}
 			
