@@ -29,16 +29,20 @@ namespace DesktopPlugin {
 	 * The DesktopLauncher widget.
 	*/
 	
+	public bool searching { get; private set; default=false; }
+	
+	public string current_keyword { get; private set; }
+	
 	public const int ITEM_WIDTH = 50;
 	public const int ITEM_HEIGHT = 50;
 	
 	private int max_item_number;
 	
 	private int current_item = 0;
-	private int last_page = 1;
 	private int current_search_length = 0;
 	
-	public int current_page { get; set; default=1; }
+	public int current_page { get; private set; default=1; }
+	public int last_page { get; private set; default=1; }
 	
 	public signal void launcher_closed();
 	public signal void launcher_opened();
@@ -66,6 +70,8 @@ namespace DesktopPlugin {
 	
 	private string start_text = null;
 	
+	private Gtk.TreeIter? last_iter = null;
+		
 	private void on_search_changed() {
 	    /**
 	     * Fired when the search text has been changed.
@@ -95,18 +101,21 @@ namespace DesktopPlugin {
 		    this.results_revealer.reveal_child = true;
 	    }
 	    
-	    string keyword = this.search.get_text().down();
+	    this.current_keyword = this.search.get_text().down();
 	    
-	    if (this.start_text != null && keyword.has_prefix(this.start_text)) {
+	    /* Reset counters */
+	    this.current_item = 0;
+	    this.current_page = 1;
+	    this.last_page = 1;
+	    
+	    if (this.start_text != null && this.current_keyword.has_prefix(this.start_text)) {
 		/* Start text still valid, thus we need only to filter */
-		this.current_item = 0;
 		this.results_filter.refilter();
 	    } else {
 		/* Start text not valid anymore, search again */
-		this.current_item = 0;
 		this.results_list.clear();
-		this.start_text = keyword;
-	        this.application_launcher.search(keyword);
+		this.start_text = this.current_keyword;
+	        this.application_launcher.search(this.current_keyword);
 	    }
 
 	    this.no_results_found.hide();
@@ -121,33 +130,52 @@ namespace DesktopPlugin {
 	     * the current keyword, False if not.
 	    */
 	    
+	    if (!this.searching) {	
+		/*
+		 * Workaround subsequent duplicate entries.
+		 * 
+		 * For no apparent reason, *some* iters are processed twice,
+		 * thus increasing the current_item counter and fooling
+		 * the page handling.
+		 * To avoid this, we store the last iter and check it with
+		 * the current one. If the iter is the same, simply decrease
+		 * by one the current_item counter.
+		 * Unfortunately we can't simply "return false" here as tests
+		 * have shown that the item that actually get visualized in the
+		 * IconView is the second one.
+		*/		
+		if (iter == this.last_iter) {
+		    this.current_item--;
+		} else {
+		    this.last_iter = iter;
+		}
 		
-	    Value infos;
-	    model.get_value(iter, 3, out infos);
-	    
-	    /*
-	     * FIXME: This check is redundant on a fresh search (as it's
-	     * done by ApplicationLauncher too) and thus we need to
-	     * avoid that.
-	     * There is no reliable method currently to find if this item
-	     * has been freshly added or this is just a refilter(), so we
-	     * need to execute this regardless of the search state.
-	    */
-	    if (!(
-		ApplicationLauncher.item_matches_keyword(
-		    this.search.get_text(),
-		    (DesktopAppInfo)infos
-		)
-	    )) {
-		return false;
+		/*
+		 * FIXME: This check is redundant on a page change.
+		 * There is no reliable method currently to find if we are
+		 * reprocessing because of a page switch, so for now just
+		 * re do the check.
+		*/
+		Value infos;
+		model.get_value(iter, 3, out infos);
+		
+		if (!(
+		    ApplicationLauncher.item_matches_keyword(
+			this.current_keyword,
+			(DesktopAppInfo)infos
+		    )
+		)) {
+		    return false;
+		}
 	    }
-
 	    
 	    /* We need to update the count */
 	    this.current_item++;
 
-	    Value name;
-	    model.get_value(iter, 0, out name);
+	    if (this.current_item > this.max_item_number*this.last_page) {
+		/* Increase last_page count */
+		this.last_page++;
+	    }
 
 	    if (this.current_item > this.max_item_number*this.current_page || this.current_item <= this.max_item_number*(this.current_page-1)) {
 		/* Not the right page, hiding */
@@ -166,6 +194,7 @@ namespace DesktopPlugin {
 		return;
 	    
 	    this.current_search_length = 0;
+	    this.searching = true;
 	    
 	}
 	
@@ -177,10 +206,7 @@ namespace DesktopPlugin {
 	    if (!this.search_mode_enabled)
 		return;
 	    
-	    this.last_page = int.max(1, (int)Math.ceil(this.current_item / this.max_item_number));
-	    
-	    /* Reset current page to 1 */
-	    this.current_page = 1;
+	    this.searching = false;
 	    
 	}
 	
@@ -192,13 +218,23 @@ namespace DesktopPlugin {
 	    
 	    if (!this.search_mode_enabled || app == null)
 		return;
-	    
-	    Gtk.TreeIter iter;
-	    this.results_list.append(out iter);
-	    
-	    Gdk.Pixbuf pixbuf = icon_theme.lookup_by_gicon(app.get_icon(),48,0).load_icon();
+
 	    this.current_search_length++;
-	    this.results_list.set(iter, 0, app.get_name(), 1, pixbuf, 2, app.get_description(), 3, app);
+
+	    Gtk.TreeIter iter;
+	    Gdk.Pixbuf pixbuf = icon_theme.lookup_by_gicon(app.get_icon(),48,0).load_icon();
+	    this.results_list.insert_with_values(
+		out iter,
+		-1,
+		0,
+		app.get_name(),
+		1,
+		pixbuf,
+		2,
+		app.get_description(),
+		3,
+		app
+	    );
 	    
 
 	}
@@ -207,7 +243,7 @@ namespace DesktopPlugin {
 	    /**
 	     * Fired when the page has been changed.
 	    */
-	    	    	    
+	    	    	    	    
 	    this.current_page = next ? this.current_page+1 : this.current_page-1;
 	    this.current_item = 0;
 	    this.results_filter.refilter();
@@ -244,7 +280,7 @@ namespace DesktopPlugin {
 	    return true;
 	}
 	
-	public DesktopLauncher(DesktopWindow parent_window, Settings settings, ApplicationLauncher application_launcher) {
+	public DesktopLauncher(DesktopWindow parent_window, Settings settings, GMenuLoader loader) {
 	    /**
 	     * Constructs the DesktopLauncher.
 	    */
@@ -255,7 +291,7 @@ namespace DesktopPlugin {
 
             this.parent_window = parent_window;
             this.settings = settings;
-	    this.application_launcher = application_launcher;
+	    this.application_launcher = new ApplicationLauncher(loader);
 	    	    
 	    /* Calculate max_item_number */
 	    int max_columns, max_rows;
@@ -334,6 +370,14 @@ namespace DesktopPlugin {
 		    return true;
 		},
 		null
+	    );
+	    /* Workaround for last-page changes done after current-page has been reset */
+	    this.notify["last-page"].connect(
+		() => {
+		    this.page_handler.buttons.get(ArrowButton.Position.RIGHT).set_sensitive(
+			!(this.current_page == this.last_page)
+		    );
+		}
 	    );
 
 	    /* "No results found" message */
