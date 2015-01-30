@@ -22,32 +22,21 @@
 using Vera;
 
 namespace DesktopPlugin {
-
-	public class ApplicationLauncher : Object {
-		
+	
+	public class GMenuLoader : Object {
 		/**
-		 * A UI toolkit-agnostic application launcher.
+		 * This class loads and maintains the GMenuTree.
 		*/
 		
-		public bool enabled { get; private set; }
+		public GMenu.Tree tree { get; private set; }
+		public GMenu.TreeDirectory root { get; private set; }
 		
-		private GMenu.Tree tree;
-		private GMenu.TreeDirectory root;
+		public bool enabled { get; construct set; default=true; }
 		
-		public signal void search_started();
-		public signal void application_found(DesktopAppInfo? app);
-		public signal void search_finished();
-		
-		private Rand random = new Rand();
-		private uint SEARCH_ID;
-		
-		public ApplicationLauncher() {
+		public GMenuLoader() {
 			/**
 			 * Constructs this class.
 			*/
-			
-			/* FIXME: Make this configurable */
-			this.enabled = true;
 			
 			this.tree = new GMenu.Tree(
 				"%sapplications.menu".printf(
@@ -70,6 +59,38 @@ namespace DesktopPlugin {
 			}
 			
 			this.root = this.tree.get_root_directory();
+		}
+		
+	}
+		
+
+	public class ApplicationLauncher : Object {
+		
+		/**
+		 * A UI toolkit-agnostic application launcher.
+		*/
+		
+		public bool enabled {
+			get {
+				return this.loader.enabled;
+			}
+		}
+		
+		private GMenuLoader loader;
+		
+		public signal void search_started();
+		public signal void application_found(DesktopAppInfo? app);
+		public signal void search_finished();
+		
+		private Rand random = new Rand();
+		private uint SEARCH_ID;
+		
+		public ApplicationLauncher(GMenuLoader loader) {
+			/**
+			 * Constructs this class.
+			*/
+			
+			this.loader = loader;
 		}
 		
 		public static bool item_matches_keyword(string keyword, DesktopAppInfo? infos) {
@@ -117,7 +138,7 @@ namespace DesktopPlugin {
 			if (directory == null)
 				this.search_started();
 			
-			GMenu.TreeIter iter = ((directory != null) ? directory : this.root).iter();
+			GMenu.TreeIter iter = ((directory != null) ? directory : this.loader.root).iter();
 			GMenu.TreeItemType type;
 			string name, description;
 			while ((type = iter.next()) != GMenu.TreeItemType.INVALID) {

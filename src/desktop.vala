@@ -36,7 +36,7 @@ namespace DesktopPlugin {
 
     public class Plugin : Peas.ExtensionBase, VeraPlugin {
 
-	private ApplicationLauncher application_launcher;
+	private GMenuLoader gmenu_loader;
 
 	public Display display;
 	private XlibDisplay? xlib_display = null;
@@ -428,7 +428,7 @@ namespace DesktopPlugin {
 		screen.get_monitor_geometry(i, out rectangle);
 		
 		/* Create window */
-		window = new DesktopWindow(rectangle, this.settings, this.application_launcher, this.display, i);
+		window = new DesktopWindow(rectangle, this.settings, this.gmenu_loader, this.display, i);
 		this.window_list += window;
 
 		/* Make the background black before rendering the wallpapers */
@@ -483,8 +483,8 @@ namespace DesktopPlugin {
 		error("Unable to load plugin settings.");
 	    }
 	    
-	    /* Base application launcher */
-	    this.application_launcher = new ApplicationLauncher();
+	    /* Shared GMenuLoader */
+	    this.gmenu_loader = new GMenuLoader();
 	    
 	    /* Styling */
 	    Gtk.CssProvider css_provider = new Gtk.CssProvider();
