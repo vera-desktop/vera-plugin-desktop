@@ -1,3 +1,10 @@
+vera-plugin-desktop (0.27.0-1) devel; urgency=medium
+
+  * Share only the GMenu tree between monitors.
+  * DesktopLauncher: made the page handling and search with the same start_text more robust.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Fri, 30 Jan 2015 21:59:41 +0100
+
 vera-plugin-desktop (0.26.0-1) devel; urgency=medium
 
   * ApplicationLauncher: do not reset the SEARCH_ID while iterating on TreeDirectories.
