@@ -41,7 +41,7 @@ namespace DesktopPlugin {
         private Settings settings;
 	private Gtk.Box container;
 	
-	private ApplicationLauncher application_launcher;
+	private GMenuLoader gmenu_loader;
 	
 	public Tutorial tutorial;
 	private ulong tutorial_menu;
@@ -172,7 +172,7 @@ namespace DesktopPlugin {
 	}
 		
 
-	public DesktopWindow(Gdk.Rectangle screen_size, Settings settings, ApplicationLauncher application_launcher, Display display, int monitor_number) {
+	public DesktopWindow(Gdk.Rectangle screen_size, Settings settings, GMenuLoader gmenu_loader, Display display, int monitor_number) {
 	    /**
 	     * Constructs the DesktopWindow.
 	    */
@@ -190,7 +190,7 @@ namespace DesktopPlugin {
 	    
             this.settings = settings;
 	    
-	    this.application_launcher = application_launcher;
+	    this.gmenu_loader = gmenu_loader;
             
             this.display = display;
 
@@ -207,7 +207,7 @@ namespace DesktopPlugin {
 
 	    /* Instantiate the background and launcher widgets... */
 	    this.desktop_background = new DesktopBackground(this, settings, monitor_number);
-	    this.desktop_launcher = new DesktopLauncher(this, settings, application_launcher);
+	    this.desktop_launcher = new DesktopLauncher(this, settings, gmenu_loader);
 	    
 	    this.container.pack_start(this.desktop_launcher, false, false, 0);
 	    this.container.pack_start(this.desktop_background, true, true, 0);
