@@ -149,6 +149,11 @@ namespace DesktopPlugin {
 	    string[] backgrounds = this.settings.get_strv("image-path");
 	    BackgroundMode type = (BackgroundMode)this.settings.get_enum("background-mode");
 	    
+	    if (backgrounds.length == 0 && type != BackgroundMode.COLOR) {
+		/* Empty background list, bye */
+		return;
+	    }
+	    
 	    /* Loop through the monitors */
 	    DesktopBackground background_object;
 	    Gdk.Pixbuf pixbuf = null;
@@ -174,6 +179,11 @@ namespace DesktopPlugin {
 		    path = backgrounds[i];
 		} else {
 		    path = backgrounds[0];
+		}
+		
+		if (path == "" && type != BackgroundMode.COLOR) {
+		    /* Safety check */
+		    continue;
 		}
 
 		if (type != BackgroundMode.COLOR && !(type == BackgroundMode.SCREEN && i > 0)) {
