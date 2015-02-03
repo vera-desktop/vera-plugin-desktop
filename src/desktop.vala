@@ -175,7 +175,7 @@ namespace DesktopPlugin {
 		 * SCREEN: we will pick only the first wallpaper.
 		*/
 		
-		if ((i < backgrounds.length && backgrounds[i] >= "") && type != BackgroundMode.SCREEN) {
+		if ((i < backgrounds.length && backgrounds[i] != "") && type != BackgroundMode.SCREEN) {
 		    path = backgrounds[i];
 		} else {
 		    path = backgrounds[0];
