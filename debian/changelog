@@ -1,3 +1,11 @@
+vera-plugin-desktop (0.28.0-1) devel; urgency=medium
+
+  * Allow empty strings in the image-path array.
+  * Do not try to set the background when the image-path array is empty or the chosen background is the first one and it's an empty string.
+  * Fix typo in empty string check
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Thu, 05 Feb 2015 18:57:12 +0100
+
 vera-plugin-desktop (0.27.0-1) devel; urgency=medium
 
   * Share only the GMenu tree between monitors.
