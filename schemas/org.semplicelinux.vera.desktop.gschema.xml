@@ -45,7 +45,7 @@
 			<description>Determines how the wallpaper is rendered.</description>
 		</key>
 		<key name="image-path" type="as">
-			<default>["/usr/share/backgrounds/semplice-numb/blue-sunset_2048x1365.jpg"]</default>
+			<default>["/usr/share/backgrounds/semplice-numb/semplice-numb_1680x1050.png"]</default>
 			<summary>Image Path</summary>
 			<description>Path to the wallpaper.</description>
 		</key>
@@ -60,7 +60,7 @@
 			<description>If true, the @vera-color property will be exported to the GTK+ theme.</description>
 		</key>
 		<key name="vera-color" type="s">
-			<default>"rgb(16,71,151)"</default>
+			<default>"rgb(14,124,187)"</default>
 			<summary>Vera color</summary>
 			<description>The @vera-color property exported to the GTK+ theme.</description>
 		</key>
