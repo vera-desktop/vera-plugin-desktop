@@ -1,3 +1,9 @@
+vera-plugin-desktop (0.29.0-1) unstable; urgency=medium
+
+  * schema: change image-path and vera-color to match the default numb wallpaper.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Wed, 11 Feb 2015 20:28:51 +0100
+
 vera-plugin-desktop (0.28.0-1) devel; urgency=medium
 
   * Allow empty strings in the image-path array.
