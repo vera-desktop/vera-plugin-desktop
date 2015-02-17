@@ -114,10 +114,17 @@ namespace DesktopPlugin {
 	    
 	    if (this.tutorial.visible_child_name == "close_launcher") {
 		/* We can go ahead */
-		this.tutorial.set_visible_child_name("end");
+		Timeout.add_seconds(1,
+		    /* We delay here to take in account the launcher animation */
+		    () => {
+			this.tutorial.set_visible_child_name("end");
+			
+			return false; /* remove */
+		    }
+		);
 	    
 		/* Nice animation after 10 seconds */
-		Timeout.add_seconds(10,
+		Timeout.add_seconds(11,
 		    () => {
 			this.tutorial.set_visible_child_name("blank");
 			
@@ -126,7 +133,7 @@ namespace DesktopPlugin {
 		);
 		
 		/* After 11 seconds, we can safely destroy the tutorial. */
-		Timeout.add_seconds(11,
+		Timeout.add_seconds(12,
 		    () => {
 			this.tutorial.destroy();
 			
