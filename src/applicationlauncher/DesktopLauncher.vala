@@ -261,7 +261,11 @@ namespace DesktopPlugin {
 	    Value infos;
 	    this.results_filter.get_value(iter, 3, out infos);
 	    	    
-	    new Launcher(((DesktopAppInfo)infos).get_commandline().split(" ")).launch();
+	    new Launcher(
+		((DesktopAppInfo)infos).get_commandline().replace(
+		    "%u","").replace("%U","").replace("%f","").replace(
+		    "%F","").strip().split(" ")
+	    ).launch();
 	    
 	    /* Close everything */
 	    this.search.set_text("");
