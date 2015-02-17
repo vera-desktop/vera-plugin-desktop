@@ -95,6 +95,27 @@ namespace DesktopPlugin {
 	    
 	}
 	
+	private string get_average_from_pixbuf(Gdk.Pixbuf pixbuf) {
+	    /**
+	     * Returns a processed average color from the given pixbuf.
+	    */
+	    
+	    Gdk.RGBA average_color = AverageColor.pixbuf_average_RGBA(pixbuf);
+	    double luma = (0.2126 * average_color.red + 0.7152 * average_color.green + 0.0722 * average_color.blue);
+	    
+	    if (luma > 0.5) {
+		/* Too bright */
+		luma -= 0.5;
+		
+		average_color.red -= luma*average_color.red;
+		average_color.blue -= luma*average_color.blue;
+		average_color.green -= luma*average_color.green;
+	    }
+	    
+	    return average_color.to_string();
+	    
+	}
+	
 	private void set_average_from_current_wallpaper() {
 	    /**
 	     * Sets the average color from the current wallpaper.
@@ -109,7 +130,7 @@ namespace DesktopPlugin {
 	    try {
 		this.settings.set_string(
 		    "vera-color",
-		    AverageColor.pixbuf_average_value(
+		    this.get_average_from_pixbuf(
 			new Gdk.Pixbuf.from_file(wallpaper)
 		    )
 		);
@@ -201,7 +222,7 @@ namespace DesktopPlugin {
 			{
 			    this.settings.set_string(
 				"vera-color",
-				AverageColor.pixbuf_average_value(pixbuf)
+				this.get_average_from_pixbuf(pixbuf)
 			    );
 			}
 		    }

@@ -158,7 +158,7 @@ namespace DesktopPlugin {
 			return average;
 		}
 
-		public static string pixbuf_average_value (Gdk.Pixbuf pixbuf)
+		public static Gdk.RGBA pixbuf_average_RGBA (Gdk.Pixbuf pixbuf)
 		{
 			var average = get_quad_average (0, 0,
 											pixbuf.get_width () - 1, pixbuf.get_height () - 1,
@@ -167,7 +167,12 @@ namespace DesktopPlugin {
 											pixbuf.get_rowstride (),
 											pixbuf.get_n_channels ());
 
-			return average.to_string();
+			return average;
+		}
+		
+		public static string pixbuf_average_value (Gdk.Pixbuf pixbuf)
+		{
+			return pixbuf_average_RGBA(pixbuf).to_string();
 		}
 		
 	}
