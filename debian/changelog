@@ -1,3 +1,9 @@
+vera-plugin-desktop (0.31.3-1) unstable; urgency=medium
+
+  * src/Recipe: fixup the libvera-color.so (gtk2) symlink.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Fri, 20 Feb 2015 18:04:44 +0100
+
 vera-plugin-desktop (0.31.2-1) unstable; urgency=medium
 
   * src/Recipe: create the gtk-2.0 modules directory when creating the symlink
