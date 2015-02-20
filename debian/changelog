@@ -1,3 +1,10 @@
+vera-plugin-desktop (0.31.1-1) unstable; urgency=medium
+
+  * vera-color-gtk2: do not initialize the unused GdkColor struct.
+  * debian/rules: specify the installation directory using the absolute path.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Fri, 20 Feb 2015 15:32:48 +0100
+
 vera-plugin-desktop (0.31.0-1) unstable; urgency=medium
 
   * Added vera-color-gtk2 module.
