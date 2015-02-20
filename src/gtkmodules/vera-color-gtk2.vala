@@ -51,8 +51,7 @@ public class VeraColor : Object {
 		
 		string color_string = settings.get_string("vera-color");
 		if (color_string.has_prefix("rgb")) {
-			Gdk.Color color = Gdk.Color();
-			
+		
 			string[] values = color_string.replace("rgb(", "").replace("rgba(", "").replace(")", "").replace(" ", "").split(",");
 			//color_string = "{ %s, %s, %s }".printf(values[0], values[1], values[2]);
 			
