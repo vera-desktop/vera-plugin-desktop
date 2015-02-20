@@ -8,7 +8,7 @@
 	dh $@ 
 
 override_dh_auto_configure:
-	bake --configure install-directory=debian/tmp
+	bake --configure install-directory=$(CURDIR)/debian/tmp
 
 override_dh_auto_build:
 	bake
