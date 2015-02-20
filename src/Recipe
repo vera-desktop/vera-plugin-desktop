@@ -53,3 +53,23 @@ libraries.vera-color {
 	packages = gtk+-3.0 gmodule-2.0
 
 }
+
+libraries.vera-color-gtk2 {
+	install-directory = $(options.library-directory)/gtk-2.0/modules
+	sources = \
+		gtkmodules/vera-color-gtk2.vala
+	vala-compile-flags = --vapidir=./vapis
+	compile-flags = -O2 -flto
+	link-flags = -flto -Wl,--as-needed
+
+	vala-packages = gtk+-2.0 gmodule-2.0
+	packages = gtk+-2.0 gmodule-2.0
+
+}
+
+
+%install : libvera-color-gtk2.so
+	ln -sf $(options.install-directory)/$(options.library-directory)/gtk-2.0/modules/libvera-color-gtk2.so $(options.install-directory)/$(options.library-directory)/gtk-2.0/modules/libvera-color.so
+
+%uninstall : libvera-color-gtk2.so
+	rm $(options.install-directory)/$(options.library-directory)/gtk-2.0/modules/libvera-color.so
