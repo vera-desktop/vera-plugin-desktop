@@ -116,7 +116,7 @@ namespace DesktopPlugin {
 			//"Per iniziare, fai clic con il tasto destro in un punto qualsiasi.",
 			this.add_named(
 				new TutorialPage(
-					"To begin, right-click anywhere in the desktop.",
+					_("To start, right-click anywhere in the desktop."),
 					this.tutorial_label_attributes
 				),
 				"menu"
@@ -130,7 +130,7 @@ namespace DesktopPlugin {
 			//"Fantastico! Hai appena aperto il menù principale di Semplice.\nAdesso scrivi qualcosa sulla tastiera.",
 			this.add_named(
 				new TutorialPage(
-					"Awesome! You have just opened the main Semplice menu.\nNow write something in the keyboard.",
+					_("Great! You have just opened the main Semplice menu.\nNow write something in the keyboard."),
 					this.tutorial_label_attributes
 				),
 				"launcher"
@@ -143,7 +143,7 @@ namespace DesktopPlugin {
 			//"Da qui puoi facilmente aprire nuove applicazioni.\nPremi Esc per nascondere il launcher.",
 			this.add_named(
 				new TutorialPage(
-					"From here you can easily open new applications.\nPress Esc to hide the launcher.",
+					_("From here you can easily open new applications.\nPress Esc to hide the launcher."),
 					this.tutorial_label_attributes
 				),
 				"close_launcher"
@@ -155,7 +155,7 @@ namespace DesktopPlugin {
 			//"Adesso puoi utilizzare Semplice. Divertiti!",
 			this.add_named(
 				new TutorialPage(
-					"Now you can use Semplice. Enjoy!",
+					_("Now you can use Semplice. Enjoy!"),
 					this.tutorial_label_attributes
 				),
 				"end"
