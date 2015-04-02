@@ -1,3 +1,9 @@
+vera-plugin-desktop (0.34-2) unstable; urgency=medium
+
+  * debian/vera-plugin-desktop.install: install translations.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Thu, 02 Apr 2015 17:56:12 +0200
+
 vera-plugin-desktop (0.34-1) unstable; urgency=medium
 
   * Translation support.
