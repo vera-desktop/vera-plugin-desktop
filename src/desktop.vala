@@ -21,6 +21,8 @@
 
 using Vera;
 
+const string GETTEXT_PACKAGE = "vera-plugin-desktop";
+
 namespace DesktopPlugin {
     
     extern void set_x_property(X.Display display, X.Window window, X.Atom atom, X.Pixmap pixmap);
@@ -501,6 +503,11 @@ namespace DesktopPlugin {
 	    /**
 	     * Initializes the plugin.
 	    */
+	    
+	    /* Translations */
+	    Intl.setlocale(LocaleCategory.MESSAGES, "");
+	    Intl.textdomain(GETTEXT_PACKAGE); 
+	    Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "utf-8"); 
 	    
 	    try {
 		this.display = display;
