@@ -1,3 +1,10 @@
+vera-plugin-desktop (1.0.0-1) unstable; urgency=medium
+
+  * Strip unwanted messages previously used to debug things around.
+  * vera-plugin-desktop 1.0.0.
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sat, 04 Apr 2015 20:19:00 +0200
+
 vera-plugin-desktop (0.34-2) unstable; urgency=medium
 
   * debian/vera-plugin-desktop.install: install translations.
