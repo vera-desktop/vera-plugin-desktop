@@ -222,7 +222,7 @@ namespace DesktopPlugin {
 	    this.current_search_length++;
 
 	    Gtk.TreeIter iter;
-	    Gdk.Pixbuf pixbuf = icon_theme.lookup_by_gicon(app.get_icon(),48,0).load_icon();
+	    Gdk.Pixbuf pixbuf = icon_theme.lookup_by_gicon(app.get_icon(),48,Gtk.IconLookupFlags.FORCE_SIZE).load_icon();
 	    this.results_list.insert_with_values(
 		out iter,
 		-1,
