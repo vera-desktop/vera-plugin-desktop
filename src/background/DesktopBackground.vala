@@ -62,9 +62,7 @@ namespace DesktopPlugin {
         }
 
         private bool on_button_pressed(Gdk.EventButton evnt) {
-            
-            message("Button pressed!");
-            
+                        
             if (evnt.button == Gdk.BUTTON_PRIMARY) {
                 /* If primary button (usually left), we need to regain focus */
                 this.parent_window.set_focus(this);

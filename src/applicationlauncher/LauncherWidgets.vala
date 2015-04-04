@@ -138,9 +138,7 @@ namespace DesktopPlugin {
 	    /**
 	     * Creates/Removes buttons.
 	    */
-	    
-	    message("Updating page number (%d)", new_page);
-	    
+	    	    
 	    PageButton first_page = null;
 	    PageButton button;
 	    int count = 0;
@@ -160,7 +158,6 @@ namespace DesktopPlugin {
 		    (_button) => {
 			PageButton page_button = (PageButton)button;
 			if (page_button.get_active()) {
-			    message("BUTTON CLICKED %d", ((PageButton)page_button).page_number);
 			    this.page_changed(((PageButton)page_button).page_number);
 			}
 		    }
@@ -174,11 +171,6 @@ namespace DesktopPlugin {
 		}
 	    }
 	    
-	    this.foreach(
-		(child) => {
-		    message("BUTTON IS %d", ((PageButton)child).page_number);
-		}
-	    );
 	}
 	
     }
