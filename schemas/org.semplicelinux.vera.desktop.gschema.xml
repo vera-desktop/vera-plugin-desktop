@@ -69,6 +69,11 @@
 			<summary>Vera color lock</summary>
 			<description>If true, the vera-color key will not be changed with the dominant color of the current wallpaper.</description>
 		</key>
+		<key name="show-launcher" type="b">
+			<default>true</default>
+			<summary>Launcher</summary>
+			<description>If true, the launcher will be shown. Note that you need to restart vera after changing the value.</description>
+		</key>
 		<key name="show-tutorial" type="b">
 			<default>true</default>
 			<summary>Tutorial</summary>
