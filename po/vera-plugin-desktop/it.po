@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vera-plugin-desktop\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2015-04-02 14:05+0000\n"
+"PO-Revision-Date: 2015-04-16 16:38+0000\n"
 "Last-Translator: g7 <me@medesimo.eu>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/vera-plugin-desktop/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -126,10 +126,20 @@ msgid ""
 msgstr "Se vero, la chiave vera-color non verrà modificata con il colore dominante dello sfondo attuale."
 
 #: org.semplicelinux.vera.desktop.gschema.xml:74
+msgid "Launcher"
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:75
+msgid ""
+"If true, the launcher will be shown. Note that you need to restart vera "
+"after changing the value."
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:79
 msgid "Tutorial"
 msgstr "Tutorial"
 
-#: org.semplicelinux.vera.desktop.gschema.xml:75
+#: org.semplicelinux.vera.desktop.gschema.xml:80
 msgid ""
 "If true, the tutorial will be shown. Note that you need to restart vera "
 "after changing the value."

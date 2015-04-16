@@ -30,6 +30,8 @@ namespace DesktopPlugin {
 	 * use.
 	*/
 
+	public bool launcher_enabled { get; construct set; }
+
 	public DesktopBackground desktop_background { get; private set; }
 	public DesktopLauncher desktop_launcher { get; private set; }
 
@@ -90,7 +92,11 @@ namespace DesktopPlugin {
 	    
 	    if (this.tutorial.visible_child_name == "menu") {
 		/* We can go ahead */
-		this.tutorial.set_visible_child_name("launcher");
+		if (this.launcher_enabled)
+		    this.tutorial.set_visible_child_name("launcher");
+		else
+		    /* Force the end as the launcher is disabled */
+		    this.tutorial_on_launcher_closed();
 	    }
 	}
 	
@@ -112,7 +118,10 @@ namespace DesktopPlugin {
 	     * Fired when the launcher has been closed
 	    */
 	    
-	    if (this.tutorial.visible_child_name == "close_launcher") {
+	    if (
+		this.tutorial.visible_child_name == "close_launcher" ||
+		(!this.launcher_enabled && this.tutorial.visible_child_name == "menu")
+	    ) {
 		/* We can go ahead */
 		Timeout.add_seconds(1,
 		    /* We delay here to take in account the launcher animation */
@@ -160,10 +169,12 @@ namespace DesktopPlugin {
 	    	    
 	    this.tutorial_menu =
 		this.desktop_background.menu_shown.connect(this.tutorial_on_menu_shown);
-	    this.tutorial_launcher_opened =
-		this.desktop_launcher.launcher_opened.connect(this.tutorial_on_launcher_opened);
-	    this.tutorial_launcher_closed =
-		this.desktop_launcher.launcher_closed.connect(this.tutorial_on_launcher_closed);
+	    if (this.launcher_enabled) {
+		this.tutorial_launcher_opened =
+		    this.desktop_launcher.launcher_opened.connect(this.tutorial_on_launcher_opened);
+		this.tutorial_launcher_closed =
+		    this.desktop_launcher.launcher_closed.connect(this.tutorial_on_launcher_closed);
+	    }
 	    
 	}
 	
@@ -173,8 +184,10 @@ namespace DesktopPlugin {
 	    */
 	    
 	    this.desktop_background.disconnect(this.tutorial_menu);
-	    this.desktop_launcher.disconnect(this.tutorial_launcher_opened);
-	    this.desktop_launcher.disconnect(this.tutorial_launcher_closed);
+	    if (this.launcher_enabled) {
+		this.desktop_launcher.disconnect(this.tutorial_launcher_opened);
+		this.desktop_launcher.disconnect(this.tutorial_launcher_closed);
+	    }
 	    
 	}
 		
@@ -203,6 +216,9 @@ namespace DesktopPlugin {
 
             this.type_hint = Gdk.WindowTypeHint.DESKTOP;
             this.set_keep_below(true);
+	    
+	    /* Launcher enabled? */
+	    this.launcher_enabled = this.settings.get_boolean("show-launcher");
 
             /* Move and resize window */
             this.move(this.screen_size.x, this.screen_size.y);
@@ -212,18 +228,21 @@ namespace DesktopPlugin {
 	    this.container = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 	    this.add(this.container);
 
-	    /* Instantiate the background and launcher widgets... */
+	    /* Instantiate the background widget */
 	    this.desktop_background = new DesktopBackground(this, settings, monitor_number);
-	    this.desktop_launcher = new DesktopLauncher(this, settings, gmenu_loader);
+
+	    /* Instantiate, pack and connect the launcher widget */
+	    if (this.launcher_enabled) {
+		this.desktop_launcher = new DesktopLauncher(this, settings, gmenu_loader);
+		this.container.pack_start(this.desktop_launcher, false, false, 0);
+		
+		this.desktop_launcher.launcher_closed.connect(this.on_launcher_closed);
+		this.desktop_background.key_press_event.connect(this.desktop_launcher.open_launcher);
+	    }
 	    
-	    this.container.pack_start(this.desktop_launcher, false, false, 0);
+	    /* Finally pack the background widget */
 	    this.container.pack_start(this.desktop_background, true, true, 0);
 	    
-	    //this.desktop_launcher.set_child_visible(false);
-	    
-	    /* Events */
-	    this.desktop_background.key_press_event.connect(this.desktop_launcher.open_launcher);
-	    this.desktop_launcher.launcher_closed.connect(this.on_launcher_closed);
 	}
 
     }

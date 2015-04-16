@@ -122,10 +122,20 @@ msgid ""
 msgstr ""
 
 #: org.semplicelinux.vera.desktop.gschema.xml:74
-msgid "Tutorial"
+msgid "Launcher"
 msgstr ""
 
 #: org.semplicelinux.vera.desktop.gschema.xml:75
+msgid ""
+"If true, the launcher will be shown. Note that you need to restart vera "
+"after changing the value."
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:79
+msgid "Tutorial"
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:80
 msgid ""
 "If true, the tutorial will be shown. Note that you need to restart vera "
 "after changing the value."

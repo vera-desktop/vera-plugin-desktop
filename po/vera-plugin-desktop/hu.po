@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vera-plugin-desktop\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2015-03-29 10:34+0000\n"
-"Last-Translator: Puskas-Kolozsvari Frederic <pkfric@yahoo.com>\n"
+"PO-Revision-Date: 2015-04-16 16:38+0000\n"
+"Last-Translator: g7 <me@medesimo.eu>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/vera-plugin-desktop/language/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -126,10 +126,20 @@ msgid ""
 msgstr "Ha ki van választva, a vera-color színkód nem cserélődik le az aktuális háttérkép domináns színére."
 
 #: org.semplicelinux.vera.desktop.gschema.xml:74
+msgid "Launcher"
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:75
+msgid ""
+"If true, the launcher will be shown. Note that you need to restart vera "
+"after changing the value."
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:79
 msgid "Tutorial"
 msgstr "Bemutató"
 
-#: org.semplicelinux.vera.desktop.gschema.xml:75
+#: org.semplicelinux.vera.desktop.gschema.xml:80
 msgid ""
 "If true, the tutorial will be shown. Note that you need to restart vera "
 "after changing the value."
