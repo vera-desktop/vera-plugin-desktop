@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: vera-plugin-desktop\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2015-03-22 17:35+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-04-16 16:38+0000\n"
+"Last-Translator: g7 <me@medesimo.eu>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/projects/p/vera-plugin-desktop/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -125,10 +125,20 @@ msgid ""
 msgstr ""
 
 #: org.semplicelinux.vera.desktop.gschema.xml:74
-msgid "Tutorial"
+msgid "Launcher"
 msgstr ""
 
 #: org.semplicelinux.vera.desktop.gschema.xml:75
+msgid ""
+"If true, the launcher will be shown. Note that you need to restart vera "
+"after changing the value."
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:79
+msgid "Tutorial"
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:80
 msgid ""
 "If true, the tutorial will be shown. Note that you need to restart vera "
 "after changing the value."

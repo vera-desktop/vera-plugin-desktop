@@ -1,11 +1,12 @@
 # 
 # Translators:
+# Moo, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: vera-plugin-desktop\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2015-03-22 17:35+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-04-16 16:38+0000\n"
+"Last-Translator: g7 <me@medesimo.eu>\n"
 "Language-Team: Lithuanian (http://www.transifex.com/projects/p/vera-plugin-desktop/language/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,23 +16,23 @@ msgstr ""
 
 #: Tutorial.vala:119
 msgid "To start, right-click anywhere in the desktop."
-msgstr ""
+msgstr "Norėdami pradėti, dešiniu pelės mygtuku spustelėkite bet kurioje darbastalio vietoje."
 
 #: Tutorial.vala:133
 msgid ""
 "Great! You have just opened the main Semplice menu.\n"
 "Now write something in the keyboard."
-msgstr ""
+msgstr "Puiku! Jūs ką tik atidarėte pagrindinį Semplice meniu.\nDabar parašykite ką nors klaviatūroje."
 
 #: Tutorial.vala:146
 msgid ""
 "From here you can easily open new applications.\n"
 "Press Esc to hide the launcher."
-msgstr ""
+msgstr "Čia jūs galite lengvai atidarinėti naujas programas.\nSpustelėkite Esc klavišą, norėdami paslėpti leistuką."
 
 #: Tutorial.vala:158
 msgid "Now you can use Semplice. Enjoy!"
-msgstr ""
+msgstr "Dabar jūs galite naudotis Semplice. Mėgaukitės!"
 
 #: org.semplicelinux.vera.desktop.gschema.xml:18
 msgid "Search paths for the backgrounds"
@@ -125,10 +126,20 @@ msgid ""
 msgstr ""
 
 #: org.semplicelinux.vera.desktop.gschema.xml:74
-msgid "Tutorial"
+msgid "Launcher"
 msgstr ""
 
 #: org.semplicelinux.vera.desktop.gschema.xml:75
+msgid ""
+"If true, the launcher will be shown. Note that you need to restart vera "
+"after changing the value."
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:79
+msgid "Tutorial"
+msgstr ""
+
+#: org.semplicelinux.vera.desktop.gschema.xml:80
 msgid ""
 "If true, the tutorial will be shown. Note that you need to restart vera "
 "after changing the value."
