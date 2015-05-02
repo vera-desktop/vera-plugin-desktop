@@ -282,8 +282,10 @@ namespace DesktopPlugin {
 	     * time, please accept this workaround.
 	    */
 	    set_x_property(this.xlib_display.display, this.xlib_display.xrootwindow, atm, this.xpixmap);
-
-	    //X.SetWindowBackgroundPixmap(xdisplay, xrootwindow, (int)xpixmap);
+	    
+	    /* SetWindowBackgroundPixmap is required for conky transparency */
+	    X.SetWindowBackgroundPixmap(this.xlib_display.display, this.xlib_display.xrootwindow, (int)xpixmap);
+	    
 	    X.ClearWindow(this.xlib_display.display, this.xlib_display.xrootwindow);
 	    this.xlib_display.display.flush();
 	    this.xlib_display.display.ungrab_server();
