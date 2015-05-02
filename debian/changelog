@@ -1,3 +1,10 @@
+vera-plugin-desktop (1.0.3-1) unstable; urgency=medium
+
+  * desktop: ensure the wallpaper is set as the WindowBackgroundPixmap
+  * 1.0.3
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sat, 02 May 2015 22:39:00 +0200
+
 vera-plugin-desktop (1.0.2-2) unstable; urgency=medium
 
   * Migration to current.
