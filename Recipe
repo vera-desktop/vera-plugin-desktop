@@ -21,6 +21,6 @@
 
 project {
 	name = vera-plugin-desktop
-	version = 1.0.2
+	version = 1.0.3
 	minimum-bake-version = 0.1
 }
