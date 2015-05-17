@@ -439,8 +439,40 @@ namespace DesktopPlugin {
 		}
 	    }
 	}
+	
+	private void on_monitors_changed() {
+	    /**
+	     * Fired when the active monitor number changed.
+	    */
+	    
+	    Gdk.Screen screen = Gdk.Screen.get_default();
+	    int current_monitor_number = screen.get_n_monitors();
+	    
+	    if (current_monitor_number == this.monitor_number) {
+		/* The monitor number didn't change, skipping */
+		return;
+	    } else if (current_monitor_number < this.monitor_number) {
+		/*
+		 * FIXME: Currently disconnected monitors will have their
+		 * desktop window unfreed. That's because we can't - currently -
+		 * reliably determine which monitor got disconnected and, to
+		 * avoid nasty things happen (such as destroying the wrong window),
+		 * the disconnected monitor's window will remain open.
+		 * 
+		 * This is obviously a bug and should be fixed.
+		*/
+		
+		return;
+	    } else {
+		/* New monitor */
+		this.populate_screens(current_monitor_number-1);
+	    }
+		
+	    //this.current_monitor_number = current_monitor_number;
+	    
+	}
 
-	private void populate_screens() {
+	private void populate_screens(int process_only_one = -1) {
 	    /**
 	     * This is the method that will create and position the DesktopWindows
 	     * on every monitor of the computer.
@@ -456,9 +488,9 @@ namespace DesktopPlugin {
 	    /* Set monitor number */
 	    this.monitor_number = screen.get_n_monitors();
 
-	    for (int i = 0; i < this.monitor_number; i++) {
+	    for (int i = ((process_only_one == -1) ? 0 : process_only_one); i < this.monitor_number; i++) {
 		/* Loop through the monitors found */
-
+		
 		/* Get Rectangle of the monitor */
 		screen.get_monitor_geometry(i, out rectangle);
 		
@@ -475,6 +507,10 @@ namespace DesktopPlugin {
 		/* If the tutorial is enabled, we need to connect things up */
 		if (this.tutorial_enabled)
 		    window.connect_for_tutorial();
+		
+		if (process_only_one > -1)
+		    /* Done */
+		    return; /* FIXME: Should look at this more closely */
 
 	    }
 	    
@@ -522,6 +558,9 @@ namespace DesktopPlugin {
 	    } catch (Error ex) {
 		error("Unable to load plugin settings.");
 	    }
+	    
+	    /* React to Gdk.Screen's monitors_changed */
+	    Gdk.Screen.get_default().monitors_changed.connect(this.on_monitors_changed);
 	    
 	    /* Shared GMenuLoader */
 	    this.gmenu_loader = new GMenuLoader();
