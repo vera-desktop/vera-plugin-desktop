@@ -70,6 +70,18 @@ public class VeraColor : Object {
 		);
 		
 	}
+
+	[CCode (cname = "g_module_check_init")]
+	public static string? g_module_load(Module module) {
+		/**
+		 * Pre-initialization.
+		*/
+		
+		/* Ensure that the module stays resident */
+		module.make_resident();
+		
+		return null;
+	}
 	
 	[CCode (cname = "gtk_module_init")]
 	public static void gtk_module_init(int argc, string[] argv) {
