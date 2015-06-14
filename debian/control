@@ -1,0 +1,19 @@
+Source: vera-plugin-desktop
+Section: x11
+Priority: optional
+Maintainer: Eugenio Paolantonio (g7) <me@medesimo.eu>
+Build-Depends: debhelper (>= 8.0.0), build-essential, bake, libvera-dev,
+ libvera-vapi, libgee-dev, libgnome-menu-3-dev, libcairo2-dev, libpeas-dev, libgtk2.0-dev, libgtk-3-dev, valac-0.26
+Standards-Version: 3.9.5
+Homepage: https://semplice-linux.org/
+Vcs-Git: https://github.com/vera-desktop/vera-plugin-desktop.git
+Vcs-Browser: https://github.com/vera-desktop/vera-plugin-desktop
+
+Package: vera-plugin-desktop
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, vera-desktop
+Description: vera desktop plugin
+ vera-plugin-desktop is the vera plugin that handles the desktop.
+ .
+ In the current iteration, it sets the wallpaper and it also provides
+ a nice application launcher.
