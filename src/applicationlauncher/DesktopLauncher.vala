@@ -284,6 +284,28 @@ namespace DesktopPlugin {
 	    return true;
 	}
 	
+	public void set_max_item_number() {
+	    /**
+	     * Calculates the max item number, and sets it.
+	    */
+	    
+	    int max_columns, max_rows;
+	    max_columns = (int)Math.floor(this.parent_window.screen_size.width / ITEM_WIDTH);
+	    max_rows = (int)Math.floor((this.parent_window.screen_size.height*70)/100 / ITEM_HEIGHT);
+	    this.max_item_number = max_columns+max_rows;
+	    
+	}
+	
+	public void on_parent_size_changed() {
+	    /**
+	     * Fired when the parent window size changed.
+	    */
+	    
+	    /* Reset max item number */
+	    this.set_max_item_number();
+	    
+	}
+	
 	public DesktopLauncher(DesktopWindow parent_window, Settings settings, GMenuLoader loader) {
 	    /**
 	     * Constructs the DesktopLauncher.
@@ -298,10 +320,7 @@ namespace DesktopPlugin {
 	    this.application_launcher = new ApplicationLauncher(loader);
 	    	    
 	    /* Calculate max_item_number */
-	    int max_columns, max_rows;
-	    max_columns = (int)Math.floor(this.parent_window.screen_size.width / ITEM_WIDTH);
-	    max_rows = (int)Math.floor((this.parent_window.screen_size.height*70)/100 / ITEM_HEIGHT);
-	    this.max_item_number = max_columns+max_rows;
+	    this.set_max_item_number();
 	    
 	    message("max item number %d", this.max_item_number);
 	    
@@ -392,6 +411,7 @@ namespace DesktopPlugin {
 	    
 	    
 	    /* Events */
+	    this.parent_window.size_changed.connect(this.on_parent_size_changed);
 	    this.results_view.item_activated.connect(this.on_item_activated);
 	    this.search.search_changed.connect(this.on_search_changed);
 	    this.application_launcher.search_started.connect(this.on_search_started);

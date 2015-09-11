@@ -49,6 +49,8 @@ namespace DesktopPlugin {
 	private ulong tutorial_menu;
 	private ulong tutorial_launcher_opened;
 	private ulong tutorial_launcher_closed;
+	
+	public signal void size_changed();
 
         public void stack_switch(string name) {
             /**
@@ -189,6 +191,27 @@ namespace DesktopPlugin {
 		this.desktop_launcher.disconnect(this.tutorial_launcher_closed);
 	    }
 	    
+	}
+	
+	public void resize_window(Gdk.Rectangle new_size, bool move_only = false) {
+	    /**
+	     * Resizes the window with the given new size.
+	    */
+	    
+	    /* The monitor coordinates may have changed, restore position */
+	    this.move(new_size.x, new_size.y);
+
+	    /* Store changes */
+	    this.screen_size.x = new_size.x;
+	    this.screen_size.y = new_size.y;
+	    this.screen_size.height = new_size.height;
+	    this.screen_size.width = new_size.width;
+	    
+	    /* Finally, resize and tell listeners about it */
+	    if (!move_only) {
+		this.resize(new_size.width, new_size.height);
+		this.size_changed();
+	    }
 	}
 		
 

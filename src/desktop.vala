@@ -55,7 +55,7 @@ namespace DesktopPlugin {
 	private int realized_backgrounds = 0;
 	
 	private bool tutorial_enabled;
-	
+		
 	private void on_settings_changed(string key) {
 	    /**
 	     * Fired when the settings of vera-desktop have been changed.
@@ -471,6 +471,38 @@ namespace DesktopPlugin {
 	    //this.current_monitor_number = current_monitor_number;
 	    
 	}
+	
+	private void on_size_changed() {
+	    /**
+	     * Fired when the size of a monitor changed.
+	    */
+	    
+	    Gdk.Screen screen = Gdk.Screen.get_default();
+	    
+	    bool changed = false;
+	    DesktopWindow window;
+	    Gdk.Rectangle rectangle;
+	    for (int i = 0; i < this.window_list.length; i++) {
+		window = this.window_list[i];
+		
+		/* Get new screen geometry */
+		screen.get_monitor_geometry(i, out rectangle);
+		
+		if (rectangle.height != window.screen_size.height || rectangle.width != window.screen_size.width) {
+		    /* Something changed, resize the DesktopWindow */
+		    changed = true;
+		    window.resize_window(rectangle);
+		} else if (rectangle.x != window.screen_size.x || rectangle.y != window.screen_size.y) {
+		    /* Move only */
+		    window.resize_window(rectangle, true);
+		}
+	    }
+	    
+	    /* This is pretty ignorant, but should be enough for the time being */
+	    if (changed)
+		this.update_background();
+	}
+	    
 
 	private void populate_screens(int process_only_one = -1) {
 	    /**
@@ -560,7 +592,9 @@ namespace DesktopPlugin {
 	    }
 	    
 	    /* React to Gdk.Screen's monitors_changed */
-	    Gdk.Screen.get_default().monitors_changed.connect(this.on_monitors_changed);
+	    Gdk.Screen screen = Gdk.Screen.get_default();
+	    screen.monitors_changed.connect(this.on_monitors_changed);
+	    screen.size_changed.connect(this.on_size_changed);
 	    
 	    /* Shared GMenuLoader */
 	    this.gmenu_loader = new GMenuLoader();
