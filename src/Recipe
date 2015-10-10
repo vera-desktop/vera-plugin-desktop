@@ -37,8 +37,8 @@ libraries.desktop {
 	link-flags = -flto -Wl,--as-needed
 	gettext-domain = vera-plugin-desktop
 
-	vala-packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libgnome-menu-3.0 gio-unix-2.0 libpeas-1.0 cairo x11 vera
-	packages = gee-1.0 gtk+-3.0 gdk-x11-3.0 libgnome-menu-3.0 gio-unix-2.0 libpeas-1.0 cairo x11 vera
+	vala-packages = gtk+-3.0 gdk-x11-3.0 libgnome-menu-3.0 gio-unix-2.0 libpeas-1.0 cairo x11 vera
+	packages = gtk+-3.0 gdk-x11-3.0 libgnome-menu-3.0 gio-unix-2.0 libpeas-1.0 cairo x11 vera
 
 }
 
