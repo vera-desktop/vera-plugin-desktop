@@ -1,3 +1,10 @@
+vera-plugin-desktop (1.0.5+numb1-3) unstable; urgency=medium
+
+  * [Recipe, packaging] Removed libgee dependency.
+  * [packaging] Bump debhelper build-dependency to be compilant with the Multi-Arch spec
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sat, 10 Oct 2015 23:00:53 +0200
+
 vera-plugin-desktop (1.0.5+numb1-2) unstable; urgency=medium
 
   * [packaging] control: build-depend on libgee-0.8-dev
