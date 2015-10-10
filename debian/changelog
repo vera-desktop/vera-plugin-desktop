@@ -1,3 +1,9 @@
+vera-plugin-desktop (1.0.5+numb1-2) unstable; urgency=medium
+
+  * [packaging] control: build-depend on libgee-0.8-dev
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sat, 10 Oct 2015 20:04:49 +0200
+
 vera-plugin-desktop (1.0.5+numb1-1) unstable; urgency=medium
 
   * [packaging] Split the vera-color modules in separate packages.
