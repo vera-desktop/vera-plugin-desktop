@@ -11,6 +11,7 @@ Vcs-Browser: https://github.com/vera-desktop/vera-plugin-desktop
 
 Package: vera-plugin-desktop
 Architecture: any
+Multi-Arch: no
 Depends: ${shlibs:Depends}, ${misc:Depends}, vera-desktop
 Suggests: vera-plugin-desktop-vera-color-gtk3, vera-plugin-desktop-vera-color-gtk2
 Description: vera desktop plugin
@@ -21,6 +22,7 @@ Description: vera desktop plugin
 
 Package: vera-plugin-desktop-vera-color-gtk3
 Architecture: any
+Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}, vera-plugin-desktop
 Replaces: vera-plugin-desktop (<< 1.0.5+numb1)
 Breaks: vera-plugin-desktop (<< 1.0.5+numb1)
@@ -35,6 +37,7 @@ Description: vera desktop plugin - vera-color gtk3 module
 
 Package: vera-plugin-desktop-vera-color-gtk2
 Architecture: any
+Multi-Arch: same
 Depends: ${shlibs:Depends}, ${misc:Depends}, vera-plugin-desktop
 Replaces: vera-plugin-desktop (<< 1.0.5+numb1)
 Breaks: vera-plugin-desktop (<< 1.0.5+numb1)

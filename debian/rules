@@ -4,11 +4,15 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
 %:
 	dh $@ 
 
 override_dh_auto_configure:
-	bake --configure install-directory=$(CURDIR)/debian/tmp
+	bake --configure \
+		install-directory=$(CURDIR)/debian/tmp \
+		library-directory=/usr/lib/$(DEB_HOST_MULTIARCH)
 
 override_dh_auto_build:
 	bake
