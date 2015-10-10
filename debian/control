@@ -12,8 +12,37 @@ Vcs-Browser: https://github.com/vera-desktop/vera-plugin-desktop
 Package: vera-plugin-desktop
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, vera-desktop
+Suggests: vera-plugin-desktop-vera-color-gtk3, vera-plugin-desktop-vera-color-gtk2
 Description: vera desktop plugin
  vera-plugin-desktop is the vera plugin that handles the desktop.
  .
  In the current iteration, it sets the wallpaper and it also provides
  a nice application launcher.
+
+Package: vera-plugin-desktop-vera-color-gtk3
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, vera-plugin-desktop
+Replaces: vera-plugin-desktop (<< 1.0.5+numb1)
+Breaks: vera-plugin-desktop (<< 1.0.5+numb1)
+Description: vera desktop plugin - vera-color gtk3 module
+ vera-plugin-desktop is the vera plugin that handles the desktop.
+ .
+ In the current iteration, it sets the wallpaper and it also provides
+ a nice application launcher.
+ .
+ This package contains the vera-color gtk3 module, which permits to
+ change on-the-fly the user interface color.
+
+Package: vera-plugin-desktop-vera-color-gtk2
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, vera-plugin-desktop
+Replaces: vera-plugin-desktop (<< 1.0.5+numb1)
+Breaks: vera-plugin-desktop (<< 1.0.5+numb1)
+Description: vera desktop plugin - vera-color gtk2 module
+ vera-plugin-desktop is the vera plugin that handles the desktop.
+ .
+ In the current iteration, it sets the wallpaper and it also provides
+ a nice application launcher.
+ .
+ This package contains the vera-color gtk2 module, which permits to
+ change on-the-fly the user interface color.
