@@ -20,7 +20,7 @@
 #
 
 libraries.desktop {
-	install-directory = $(options.library-directory)/vera/plugins
+	install-directory = $(options.resource-directory)/lib/vera/plugins
 	sources = \
 		applicationlauncher/ApplicationLauncher.vala \
 		applicationlauncher/DesktopLauncher.vala \
