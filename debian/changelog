@@ -1,3 +1,17 @@
+vera-plugin-desktop (1.10.0-1) unstable; urgency=medium
+
+  * [gitignore] Ignore Recipe.conf.
+  * [desktop] Properly react to screen size changes.
+  * [packaging] Split the vera-color modules in separate packages.
+  * [vera-plugin-desktop] Enforce (options.resource-directory)/lib as the vera plugin installation path.
+  * [packaging] Enable multi-arch
+  * [packaging] control: build-depend on valac instead of valac-0.28
+  * [packaging] control: build-depend on libgee-0.8-dev
+  * [Recipe, packaging] Removed libgee dependency.
+  * [packaging] Bump debhelper build-depenendency to be compilant with the Multi-Arch spec
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sun, 11 Oct 2015 17:17:00 +0200
+
 vera-plugin-desktop (1.0.5-1) unstable; urgency=medium
 
   * [gtkmodules] Make both modules resident.
