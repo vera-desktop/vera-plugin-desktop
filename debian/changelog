@@ -1,3 +1,9 @@
+vera-plugin-desktop (1.0.5+numb2-2) unstable; urgency=medium
+
+  * Rebuild on current (main)
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Thu, 15 Oct 2015 00:17:54 +0200
+
 vera-plugin-desktop (1.0.5+numb2-1) unstable; urgency=medium
 
   * Source changed, bump version.
