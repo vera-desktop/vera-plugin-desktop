@@ -50,8 +50,8 @@ namespace DesktopPlugin {
 
 			infos.dest_w = geometry.width;
 			infos.dest_h = geometry.height;
-			infos.src_w = pixbuf.get_width();
-			infos.src_h = pixbuf.get_height();
+			infos.src_w = (pixbuf != null) ? pixbuf.get_width() : 0;
+			infos.src_h = (pixbuf != null) ? pixbuf.get_height() : 0;
 			
 			if (mode == BackgroundMode.SCREEN) {
 				infos.x = -geometry.x;
