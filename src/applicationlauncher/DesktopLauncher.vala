@@ -23,7 +23,7 @@ using Vera;
 
 namespace DesktopPlugin {
 
-    public class DesktopLauncher : Gtk.SearchBar {
+    public class DesktopLauncher : Gtk.Revealer {
 
 	/**
 	 * The DesktopLauncher widget.
@@ -54,7 +54,8 @@ namespace DesktopPlugin {
 	private ApplicationLauncher application_launcher;
 	
 	private Gtk.Box container;
-	
+
+	private Gtk.SearchBar bar;
 	private Gtk.SearchEntry search;
 	
 	private Gtk.Revealer results_revealer;
@@ -83,12 +84,13 @@ namespace DesktopPlugin {
 		
 		this.results_list.clear();
 		
-		this.search_mode_enabled = false;
+		this.bar.search_mode_enabled = false;
 		this.results_revealer.reveal_child = false;
 		
 		this.start_text = null;
 		
 		this.launcher_closed();
+		this.set_reveal_child(false);
 				
 		//this.set_child_visible(false);
 		
@@ -190,7 +192,7 @@ namespace DesktopPlugin {
 	     * Fired when the actual search has been started.
 	    */
 	    
-	    if (!this.search_mode_enabled)
+	    if (!this.bar.search_mode_enabled)
 		return;
 	    
 	    this.current_search_length = 0;
@@ -203,7 +205,7 @@ namespace DesktopPlugin {
 	     * Fired when the search finished.
 	    */
 
-	    if (!this.search_mode_enabled)
+	    if (!this.bar.search_mode_enabled)
 		return;
 	    
 	    this.searching = false;
@@ -216,7 +218,7 @@ namespace DesktopPlugin {
 	     * application.
 	    */
 	    
-	    if (!this.search_mode_enabled || app == null)
+	    if (!this.bar.search_mode_enabled || app == null)
 		return;
 
 	    this.current_search_length++;
@@ -278,8 +280,9 @@ namespace DesktopPlugin {
 	    */
 	    
 	    this.launcher_opened();
-	    
-	    this.handle_event(event);
+
+	    this.set_reveal_child(true);
+	    this.bar.handle_event(event);
 	    
 	    return true;
 	}
@@ -315,6 +318,9 @@ namespace DesktopPlugin {
 	    
 	    this.name = "VeraDesktopLauncher";
 
+	    this.bar = new Gtk.SearchBar();
+	    this.add(this.bar);
+
             this.parent_window = parent_window;
             this.settings = settings;
 	    this.application_launcher = new ApplicationLauncher(loader);
@@ -326,12 +332,12 @@ namespace DesktopPlugin {
 	    
 	    /* Build the container */
 	    this.container = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-	    this.add(this.container);
+	    this.bar.add(this.container);
 	    
 	    /* Build the search entry */
 	    this.search = new Gtk.SearchEntry();
 	    this.container.pack_start(this.search, false, false, 0);
-	    this.connect_entry(this.search);
+	    this.bar.connect_entry(this.search);
 
 	    /* Size */
 	    this.search.set_size_request(600, -1);
