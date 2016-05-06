@@ -61,15 +61,6 @@ namespace DesktopPlugin {
             //this.stack.set_visible_child_name(name);
         }
 	
-	public bool handle_search_bar(Gdk.EventKey evnt) {
-	    
-	    this.desktop_launcher.show();
-	    
-	    this.desktop_launcher.handle_event(evnt);
-	    
-	    return true;
-	}
-	
 	private void on_launcher_closed() {
 	    
 	    this.desktop_background.grab_focus();
