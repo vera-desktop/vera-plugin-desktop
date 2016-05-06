@@ -188,8 +188,15 @@ namespace DesktopPlugin {
             
             /* Set background */
             Cairo.Pattern pattern = new Cairo.Pattern.for_surface(surface);
-            this.get_window().set_background_pattern(pattern);
-            
+            /*
+             * FIXME: GTK+ 3.20 broke the EventBox painting.
+             * As a workaround, paint on the parent window instead.
+             * Unfortunately, this doesn't permit to have the "slide down"
+             * animation as the EventBox will be empty
+            */
+            //this.get_window().set_background_pattern(pattern);
+            this.parent_window.get_window().set_background_pattern(pattern);
+            this.parent_window.queue_draw();
             //X.free_pixmap(this.xlib_display.display, xpixmap);
             
         }
