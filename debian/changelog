@@ -1,3 +1,12 @@
+vera-plugin-desktop (1.0.6-1) unstable; urgency=medium
+
+  * [background] BackgroundTools: Check for pixbuf existence before trying to determine its size
+  * [background] DesktopBackground: Paint the background to the parent_window (workarounds GTK+ 3.20 breakage)
+  * [applicationlauncher] Wrap the SearchBar into a Revealer
+  * [vera-plugin-desktop] Bump version
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sun, 08 May 2016 15:02:19 +0200
+
 vera-plugin-desktop (1.0.5+numb2-2) unstable; urgency=medium
 
   * Rebuild on current (main)
