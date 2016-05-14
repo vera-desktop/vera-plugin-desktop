@@ -1,3 +1,10 @@
+vera-plugin-desktop (1.0.7-1) unstable; urgency=medium
+
+  * [applicationlauncher] DesktopLauncher: hide the revealer by default
+  * [vera-plugin-desktop] Bump version
+
+ -- Eugenio Paolantonio (g7) <me@medesimo.eu>  Sat, 14 May 2016 15:22:57 +0200
+
 vera-plugin-desktop (1.0.6-1) unstable; urgency=medium
 
   * [background] BackgroundTools: Check for pixbuf existence before trying to determine its size
