@@ -346,6 +346,7 @@ namespace DesktopPlugin {
 	    
 	    this.search.show();
 	    this.show();
+	    this.set_reveal_child(false);
 	    
 	    /* Results */
 	    this.results_revealer = new Gtk.Revealer();
