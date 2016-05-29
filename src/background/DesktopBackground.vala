@@ -88,6 +88,12 @@ namespace DesktopPlugin {
             Gdk.Rectangle geometry;
             BackgroundMode mode = (pixbuf != null) ? this.current_background_mode : BackgroundMode.COLOR;
             Gdk.Screen scr = this.parent_window.get_screen();
+
+            /* Abort if monitor is offline */
+            if (this.monitor_number >= scr.get_n_monitors()) {
+                warning("Monitor %d offline, skipping...", this.monitor_number);
+                return;
+            }
             
             /* Create a subsurface of the current monitor size */
             scr.get_monitor_geometry(this.monitor_number, out geometry);

@@ -468,7 +468,7 @@ namespace DesktopPlugin {
 		this.populate_screens(current_monitor_number-1);
 	    }
 		
-	    //this.current_monitor_number = current_monitor_number;
+	    this.monitor_number = current_monitor_number;
 	    
 	}
 	
@@ -484,6 +484,11 @@ namespace DesktopPlugin {
 	    Gdk.Rectangle rectangle;
 	    for (int i = 0; i < this.window_list.length; i++) {
 		window = this.window_list[i];
+
+		/* Abort if monitor is not meant to be */
+		if (i >= this.monitor_number) {
+		    break;
+		}
 		
 		/* Get new screen geometry */
 		screen.get_monitor_geometry(i, out rectangle);
